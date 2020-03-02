@@ -24,7 +24,7 @@ DJANGO_ENV = os.environ.get("DJANGO_ENV", "local")
 SECRET_KEY = '=cjw-_9^k(qs*u0k%yi5o*4fxv626n5ff2$7mok=l$4)p83$!*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['uni-tube.herokuapp.com','127.0.0.1', 'localhost']
 
