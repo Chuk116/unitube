@@ -1,0 +1,11 @@
+version: "3"
+services:
+  db:
+    image: "postgres:11"
+    container_name: "unitube_local_db"
+    environment:
+      POSTGRES_USER: unitube_admin
+      POSTGRES_PASSWORD: unitube_local
+      POSTGRES_DB: unitube_local_db
+    ports:
+      - "54321:5432"
