@@ -87,8 +87,8 @@ if DJANGO_ENV == "local":
         'PORT': '54321',
     }
 else:
-    prod_db  =  dj_database_url.config(conn_max_age=500)
-    DATABASES['default'].update(prod_db)
+    DATABASES['default'] = dj_database_url.config(conn_max_age=500)
+
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
