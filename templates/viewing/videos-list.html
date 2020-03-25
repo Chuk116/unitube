@@ -6,7 +6,7 @@
     <form action='' method="POST"> <!-- this is where it redirects -->
         <h4><strong>{{video.title}}</strong></h4>
         <iframe width="640" height="360" src="{{video.embed_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        <p><b>Posted by:</b> {{user.username}}</p>
+        <p><b>Posted by:</b> {{video.user.username}}</p>
         <p><b>Description:</b> {{video.description}}</p>
         {% csrf_token %}
     </form>
