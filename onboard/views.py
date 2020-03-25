@@ -28,7 +28,7 @@ def signup(request):
         form = SignUpForm()
         return render(request, 'registration/signup.html', {'form': form})
 
-
+@gateway()
 def login(request):
     searchForm = SearchForm()
     if request.method == 'POST':
