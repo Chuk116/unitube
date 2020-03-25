@@ -9,3 +9,4 @@ pytz==2017.3
 whitenoise==4.1.4
 django-crispy-forms==1.8.0
 django-widget-tweaks==1.4.5
+django-cas-client==1.5.3
