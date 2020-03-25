@@ -1,0 +1,23 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html>
+    <h1>Hi, {{user.username}}</h1>
+    <form method='POST' action="/search/">
+        {% csrf_token %}
+        <div class="form-group row">
+            <div  class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {% render_field searchForm.search class="form-control" %}
+                {% render_field searchForm.class_ class="form-control" %}
+                <button type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+    {% block content %}
+    <script>
+        if ( window.history.replaceState ) {
+            window.history.replaceState( null, null, window.location.href );
+        }
+    </script>
+    {% endblock %}
+</html>

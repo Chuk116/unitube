@@ -17,7 +17,19 @@ from django.contrib import admin
 from django.urls import path
 
 from onboard import views as onboard_views
+from posting import views as posting_views
+from searching import views as search_views
+import cas.views
 urlpatterns = [
-    path('', onboard_views.signup, name="signup"),
+    path('search/', search_views.search, name="search-videos"),
+    path('post-video/', posting_views.post_video, name="post-video"),
+    
+    # CAS
+    path('admin/login/', cas.views.login, name='login'),
+    path('admin/logout/', cas.views.logout, name='logout'),
+    path('', onboard_views.login, name="home"),
+    path('logout', onboard_views.logout, name="logout"),
+    path('login/', onboard_views.login, name="login"),
+    path('signup/', onboard_views.signup, name="signup"),
     path('admin/', admin.site.urls),
 ]

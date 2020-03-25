@@ -1,0 +1,6 @@
+{% load static %}
+{% if user.is_authenticated %}
+{% include 'homepage.html' %}
+{% else %}
+{% include 'login.html' %}
+{% endif %}
