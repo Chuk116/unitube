@@ -11,11 +11,9 @@ class SignUpForm(UserCreationForm):
     def clean(self):
         email = self.cleaned_data.get('email')
         username = self.cleaned_data.get('username')
-        userEmail = User.objects.filter(email=email)
-        userName = User.objects.filter(username=username)
-        if userEmail:
+        if User.objects.filter(email=email).exists():
             self.add_error('email', "This email is already in use!")
-        if userName:
+        if User.objects.filter(username=username).exists():
             self.add_error('username', 'Username is already in use')
         return self.cleaned_data
 

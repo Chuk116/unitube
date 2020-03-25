@@ -2,7 +2,9 @@ from django.shortcuts import render
 from searching.forms import SearchForm
 from .forms import PostForm
 from .models import Video
+from cas.decorators import gateway
 
+@gateway()
 def post_video(request):
     if request.method == 'POST':
         form = PostForm(request.POST)
