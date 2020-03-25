@@ -51,8 +51,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'cas.middleware.CASMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'cas.middleware.CASMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
