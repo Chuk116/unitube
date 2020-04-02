@@ -35,7 +35,6 @@ CAS_GATEWAY = False
 # Application definition
 
 INSTALLED_APPS = [
-    'django_cas_ng',
     'cas',
     'widget_tweaks',
     'django.contrib.admin',
@@ -44,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_cas_ng',
 
     'onboard',
     'posting',
