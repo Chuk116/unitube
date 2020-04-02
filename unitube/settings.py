@@ -15,7 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DJANGO_ENV = os.environ.get("DJANGO_ENV", "local")
+DJANGO_ENV = os.environ.get("DJANGO_ENV", "production")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -26,7 +26,7 @@ SECRET_KEY = '=cjw-_9^k(qs*u0k%yi5o*4fxv626n5ff2$7mok=l$4)p83$!*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['uni-tube.herokuapp.com','127.0.0.1', 'production']
+ALLOWED_HOSTS = ['uni-tube.herokuapp.com','127.0.0.1', 'localhost']
 
 CAS_SERVER_URL = 'https://fed.princeton.edu/cas/login'
 CAS_LOGOUT_COMPLETELY = True
