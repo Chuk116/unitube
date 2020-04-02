@@ -1,0 +1,20 @@
+{% block content %}
+<div>
+    <h1 class="title"> Profile </h1>
+
+    <h2>{{user.username}}</h2>
+
+    <h4><strong>Primary Learning Style</strong></h4>
+    <p>{{user.profile.learning_style}}</p>
+
+    <h4><strong>Year In School</strong></h4>
+    <p>{{user.profile.year_in_school}}</p>
+    
+    <h4><strong>Major</strong></h4>
+    <p>{{user.profile.major}}</p>
+
+    <a href="{% url 'edit_profile' %}">Edit</a>
+    <br><br>
+    <a href="{% url 'home' %}">Home</a>
+</div>
+{% endblock %}

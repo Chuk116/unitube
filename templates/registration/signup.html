@@ -7,7 +7,7 @@
         <div class="col-xs-12 col-md-10 signup-form">
           <form method="post">
             {% csrf_token %}
-            {% for field in form %}
+            {% for field in formUser %}
               <p>
                 {{ field.label_tag }}<br>
                 {{ field }}
@@ -18,6 +18,20 @@
                   <p style="color: red">{{ error }}</p>
                 {% endfor %}
               </p>
+            {% endfor %}
+            <br>
+            <h3>Below you will be inputting information for your profile.</h3>
+            {% for field in formProf %}
+            <p>
+              {{ field.label_tag }}<br>
+              {{ field }}
+              {% if field.help_text %}
+                <small style="color: grey">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+                <p style="color: red">{{ error }}</p>
+              {% endfor %}
+            </p>
             {% endfor %}
             <button type="submit">Sign up</button>
           </form>

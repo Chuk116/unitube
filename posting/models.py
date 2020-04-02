@@ -9,6 +9,7 @@ CLASS_CHOICES = [
     ('Cos333', 'Cos333'),
     ('Cos340', 'Cos340'),
 ]
+
 # Create your models here.
 class Video(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

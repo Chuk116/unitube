@@ -19,8 +19,12 @@ from django.urls import path
 from onboard import views as onboard_views
 from posting import views as posting_views
 from searching import views as search_views
+from account import views as account_views
 import cas.views
 urlpatterns = [
+    path('edit-profile/', account_views.edit_profile, name="edit_profile"),
+    path('profile/', account_views.view_profile, name="view_profile"),
+    
     path('search/', search_views.search, name="search-videos"),
     path('post-video/', posting_views.post_video, name="post-video"),
     

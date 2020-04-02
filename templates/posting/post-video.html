@@ -1,6 +1,6 @@
 <body>
     <h1>Post A Video</h1>
-        <form method="post">
+    <form method="post">
         {% csrf_token %}
         {% for field in form %}
             <p>
@@ -15,5 +15,7 @@
             </p>
         {% endfor %}
         <button type="submit">Post</button>
-        </form>
+    </form>
+    <br><br>
+    <a href="{% url 'home' %}">Home</a>
 </body>

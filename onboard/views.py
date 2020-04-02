@@ -6,13 +6,17 @@ from django.contrib.auth import logout as auth_logout
 from cas.decorators import gateway
 
 from .forms import SignUpForm, LoginForm
+from account.forms import EditProfileForm
 from searching.forms import SearchForm
+from account.models import Profile
 
 def signup(request):
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
+        formUser = SignUpForm(request.POST)
+        formProf = EditProfileForm(request.POST)
+        if formUser.is_valid() and formProf.is_valid():
+            user = formUser.save()
+            Profile.objects.create(user=user, learning_style=formProf.cleaned_data['learning_style'], year_in_school=formProf.cleaned_data['year_in_school'],major=formProf.cleaned_data['major'])
         else:
           error_message=''
           username = request.POST['username']
@@ -20,15 +24,17 @@ def signup(request):
             user = User.objects.get(username=username)
           except:
             error_message = "We encountered a problem signing you up"
-          return render(request, 'registration/signup.html', {'form': form, 'error_message':error_message})
+          return render(request, 'registration/signup.html', {'formUser': formUser, 'formProf': formProf, 'error_message':error_message})
         
         return render(request, 'registration/signup_confirmed.html')
 
     else:
-        form = SignUpForm()
-        return render(request, 'registration/signup.html', {'form': form})
+        formUser = SignUpForm()
+        formProf = EditProfileForm()
+        formProf['learning_style'].label = 'Which best describes your learning style?'
+        return render(request, 'registration/signup.html', {'formUser': formUser, 'formProf':formProf})
 
-# @gateway()
+@gateway()
 def login(request):
     searchForm = SearchForm()
     if request.method == 'POST':
