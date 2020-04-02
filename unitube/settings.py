@@ -36,6 +36,7 @@ CAS_GATEWAY = False
 
 INSTALLED_APPS = [
     'django_cas_ng',
+    'cas',
     'widget_tweaks',
     'django.contrib.admin',
     'django.contrib.auth',
