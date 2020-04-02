@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['uni-tube.herokuapp.com','127.0.0.1', 'localhost']
 CAS_SERVER_URL = 'https://fed.princeton.edu/cas/login'
 CAS_LOGOUT_COMPLETELY = True
 CAS_PROVIDE_URL_TO_LOGOUT = True
-CAS_GATEWAY = True
+CAS_GATEWAY = False
 # Application definition
 
 INSTALLED_APPS = [
