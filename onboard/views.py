@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
-from cas.decorators import gateway
+
 
 from .forms import SignUpForm, LoginForm
 from account.forms import EditProfileForm
@@ -34,7 +34,7 @@ def signup(request):
         formProf['learning_style'].label = 'Which best describes your learning style?'
         return render(request, 'registration/signup.html', {'formUser': formUser, 'formProf':formProf})
 
-@gateway()
+
 def login(request):
     searchForm = SearchForm()
     if request.method == 'POST':
@@ -48,7 +48,8 @@ def login(request):
             if user is not None:
                 auth_login(request, user)
                 context = {'searchForm': searchForm,}
-                return render(request, '../templates/home.html', context=context)
+                return redirect('cas-ng-login')
+                # return render(request, '../templates/home.html', context=context)
             else:
                 # return invalid login error message
                 return render(request, '../templates/home.html', {'form': form, 'error_message': "Incorrect username and/or password"})

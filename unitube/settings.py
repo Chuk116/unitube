@@ -35,7 +35,7 @@ CAS_GATEWAY = False
 # Application definition
 
 INSTALLED_APPS = [
-    'cas',
+    'django_cas_ng',
     'widget_tweaks',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -56,7 +56,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'cas.middleware.CASMiddleware',
+    'django_cas_ng.middleware.CASMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -84,7 +84,7 @@ TEMPLATES = [
 ]
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'cas.backends.CASBackend',
+    'django_cas_ng.backends.CASBackend',
 )
 
 WSGI_APPLICATION = 'unitube.wsgi.application'
