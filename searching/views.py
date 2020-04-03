@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from posting.models import Video
 from django.contrib.auth.models import User
-from cas.decorators import gateway
+# from cas.decorators import gateway
 from searching.forms import SearchForm
 from .search import search_videos
 
-@gateway()
+# @gateway()
 def search(request):
     if request.method == 'POST':
         searchForm = SearchForm(request.POST)
