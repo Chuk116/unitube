@@ -48,8 +48,8 @@ def login(request):
             if user is not None:
                 auth_login(request, user)
                 context = {'searchForm': searchForm,}
-                return redirect('cas-ng-login')
-                # return render(request, '../templates/home.html', context=context)
+                # return redirect('admin/login')
+                return render(request, '../templates/home.html', context=context)
             else:
                 # return invalid login error message
                 return render(request, '../templates/home.html', {'form': form, 'error_message': "Incorrect username and/or password"})
