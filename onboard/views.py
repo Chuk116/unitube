@@ -7,7 +7,7 @@ from django.contrib.auth import logout as auth_logout
 
 from .forms import SignUpForm, LoginForm
 from account.forms import EditProfileForm
-from searching.forms import SearchForm
+from videos.forms import SearchForm
 from account.models import Profile
 
 def signup(request):

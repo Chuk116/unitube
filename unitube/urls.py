@@ -14,28 +14,25 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-
+from django.urls import path, include
+from django.conf.urls import url
 from onboard import views as onboard_views
-from posting import views as posting_views
-from searching import views as search_views
+from videos import views as videos_views
 from account import views as account_views
-import django_cas_ng.views
+
 urlpatterns = [
-    path('admin/login', django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'),
-    path('admin/logout', django_cas_ng.views.LogoutView.as_view(), name='cas_ng_logout'),
     path('edit-profile/', account_views.edit_profile, name="edit_profile"),
     path('profile/', account_views.view_profile, name="view_profile"),
     
-    path('search/', search_views.search, name="search-videos"),
-    path('post-video/', posting_views.post_video, name="post-video"),
-    
-    # CAS
-    # path('admin/login/', cas.views.login, name='login'),
-    # path('admin/logout/', cas.views.logout, name='logout'),
+    path('search/', videos_views.search, name="search-videos"),
+    path('post-video/', videos_views.post_video, name="post-video"),
+    path('video-page/<str:video_id>/', videos_views.video_page, name="video-page"),
+    path('post-comment/', videos_views.post_comment, name="post-comment"),
+
     path('', onboard_views.login, name="home"),
     path('logout', onboard_views.logout, name="logout"),
     path('login/', onboard_views.login, name="login"),
     path('signup/', onboard_views.signup, name="signup"),
+    url('cas/login/', include('uniauth.urls.cas_only', namespace='uniauth')),
     path('admin/', admin.site.urls),
 ]

@@ -15,7 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DJANGO_ENV = os.environ.get("DJANGO_ENV", "production")
+DJANGO_ENV = os.environ.get("DJANGO_ENV", "prod")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -28,14 +28,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['uni-tube.herokuapp.com','127.0.0.1', 'localhost']
 
-CAS_SERVER_URL = 'https://fed.princeton.edu/cas/login'
-CAS_LOGOUT_COMPLETELY = True
-CAS_PROVIDE_URL_TO_LOGOUT = True
-CAS_GATEWAY = True
+LOGIN_URL = "/cas/login/"
+UNIAUTH_LOGIN_DISPLAY_STANDARD = False
+UNIAUTH_LOGOUT_CAS_COMPLETELY = True
 # Application definition
 
 INSTALLED_APPS = [
     # 'cas',
+    'uniauth',
     'widget_tweaks',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,8 +46,7 @@ INSTALLED_APPS = [
     'django_cas_ng',
 
     'onboard',
-    'posting',
-    'searching',
+    'videos',
     'account',
 ]
 
@@ -57,7 +56,6 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_cas_ng.middleware.CASMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -84,8 +82,8 @@ TEMPLATES = [
     },
 ]
 AUTHENTICATION_BACKENDS = (
+    'uniauth.backends.CASBackend',
     'django.contrib.auth.backends.ModelBackend',
-    'django_cas_ng.backends.CASBackend',
 )
 
 WSGI_APPLICATION = 'unitube.wsgi.application'

@@ -1,16 +1,27 @@
 {% extends 'base-app.html' %}
 {% load static %}
 {% block content %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/video-display.css' %}" />
+</head>
 {% if videolist|length > 0 %}
     {% for video in videolist %}
-    <form action='' method="POST"> <!-- this is where it redirects -->
-        <h4><strong>{{video.title}}</strong></h4>
-        <iframe width="640" height="360" src="{{video.embed_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        <p><b>Posted by:</b> {{video.user.username}}</p>
-        <p><b>Description:</b> {{video.description}}</p>
-        {% csrf_token %}
-    </form>
-    <b><hr></b>
+    <div class="videos-list">
+        <form method="POST" action="{% url 'video-page' video_id=video.uni_video_id %}">
+            <input type="hidden" id="video_id" name="video_id" value={{video.uni_video_id}}>
+            <h4><strong>{{video.title}}</strong></h4>
+            <div class="videos-list-video">
+                <iframe width="50%" height="100%" src="{{video.embed_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="videos-list-des">
+                <p><b>Posted by:</b> {{video.user.username}}</p>
+                <p><b>Description:</b> {{video.description}}</p>
+            </div>
+            {% csrf_token %}
+            <button type='submit'>View</button>
+        </form>
+        <b><hr></b>
+    </div>
     {% endfor %}
 {% else %}
 {% include 'viewing/no-videos.html' %}

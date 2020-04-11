@@ -2,6 +2,9 @@
 {% load widget_tweaks %}
 <!DOCTYPE html>
 <html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    </head>
     <h1>Hi, {{user.username}}</h1>
     <form method='POST' action="/search/">
         {% csrf_token %}
