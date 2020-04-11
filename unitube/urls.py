@@ -33,6 +33,6 @@ urlpatterns = [
     path('logout', onboard_views.logout, name="logout"),
     path('login/', onboard_views.login, name="login"),
     path('signup/', onboard_views.signup, name="signup"),
-    url('cas/login/', include('uniauth.urls.cas_only', namespace='uniauth')),
     path('admin/', admin.site.urls),
+    url('cas/login/', include('uniauth.urls.cas_only', namespace='uniauth')),
 ]
