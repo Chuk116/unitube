@@ -19,6 +19,8 @@ from django.conf.urls import url
 from onboard import views as onboard_views
 from videos import views as videos_views
 from account import views as account_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('edit-profile/', account_views.edit_profile, name="edit_profile"),
@@ -28,6 +30,7 @@ urlpatterns = [
     path('post-video/', videos_views.post_video, name="post-video"),
     path('video-page/<str:video_id>/', videos_views.video_page, name="video-page"),
     path('post-comment/', videos_views.post_comment, name="post-comment"),
+    path('post-rating/', videos_views.post_rating, name="post-rating"),
 
     path('', onboard_views.login, name="home"),
     path('logout', onboard_views.logout, name="logout"),
@@ -35,4 +38,4 @@ urlpatterns = [
     path('signup/', onboard_views.signup, name="signup"),
     path('admin/', admin.site.urls),
     url('cas/login/', include('uniauth.urls.cas_only', namespace='uniauth')),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

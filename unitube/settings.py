@@ -15,7 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DJANGO_ENV = os.environ.get("DJANGO_ENV", "post")
+DJANGO_ENV = os.environ.get("DJANGO_ENV", "local")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_cas_ng',
 
     'onboard',
     'videos',
@@ -146,8 +145,17 @@ STATIC_URL = '/static/'
 PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
 
 STATIC_ROOT = PROJECT_DIR  # os.path.join(PROJECT_DIR, 'static')
-STATICFILE_DIRS = PROJECT_DIR
+STATICFILE_DIRS = os.path.join(os.path.abspath(BASE_DIR), 'static')
 #  Add configuration for static files storage using whitenoise
 STATICFILE_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# django_heroku.settings(locals())
+# django_heroku.settings(locals())/Users/chuk116/Documents/iw_proj/unitube/static/videos/js/jquery-emojiRatings.min.js
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'unitubeapp@gmail.com'
+EMAIL_HOST_PASSWORD = 'appunitube'
+
+YOUTUBE_API_KEY = 'AIzaSyACeKipzLH3X5f6voHUKW644dXall1O2Lo'

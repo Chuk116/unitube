@@ -4,8 +4,10 @@
 <html>
     <head>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
     </head>
-    <h1>Hi, {{user.username}}</h1>
+    <!-- <h1>Hi, {{user.username}}</h1> -->
     <form method='POST' action="/search/">
         {% csrf_token %}
         <div class="form-group row">
@@ -22,5 +24,7 @@
             window.history.replaceState( null, null, window.location.href );
         }
     </script>
+
+    
     {% endblock %}
 </html>

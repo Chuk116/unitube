@@ -6,7 +6,7 @@
 </head>
 {% if videolist|length > 0 %}
     {% for video in videolist %}
-    <div class="videos-list">
+    <div class="videos-list-panel">
         <form method="POST" action="{% url 'video-page' video_id=video.uni_video_id %}">
             <input type="hidden" id="video_id" name="video_id" value={{video.uni_video_id}}>
             <h4><strong>{{video.title}}</strong></h4>
@@ -14,6 +14,7 @@
                 <iframe width="50%" height="100%" src="{{video.embed_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
             <div class="videos-list-des">
+                <p>{{video.avg_rating}} &#x2B50 ({{video.num_ratings}})</p>
                 <p><b>Posted by:</b> {{video.user.username}}</p>
                 <p><b>Description:</b> {{video.description}}</p>
             </div>

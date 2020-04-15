@@ -1,0 +1,17 @@
+.video-list-panel {
+    display: flex;
+    flex-direction: row;
+}
+
+div.header {
+    display: inline;
+}
+
+p.header {
+    display: inline;
+}
+
+.videos-page-ytb-data-likes-views {
+    display: flex;
+    flex-direction: row;
+}
