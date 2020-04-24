@@ -1,5 +1,6 @@
 from django import forms
-from .models import Video, CLASS_CHOICES
+from .models import Video, SearchFilters, CLASS_CHOICES, TIME_LENGTH_CHOICES, SORT_BY_CHOICES, SORT_BY_DATA_CHOICES
+from account.models import LEARN_STYLES_CHOICES
 from unitube.settings import YOUTUBE_API_KEY
 import urllib.request
 import json
@@ -107,7 +108,7 @@ def randomStringDigits(stringLength=6):
 
 class SearchForm(forms.Form):
     search = forms.CharField(
-            required=False,
+            required=True,
             widget=forms.TextInput(
                 attrs={
                     "class": "form-control",
@@ -133,3 +134,15 @@ class CommentForm(forms.Form):
                 
             )
     )
+
+class SearchFilterForm(forms.Form):
+    LEARN_STYLES_CHOICES.remove(('',''))
+    learning_style = forms.ChoiceField(required=False, widget=forms.RadioSelect, choices=LEARN_STYLES_CHOICES)
+    time_length = forms.ChoiceField(required=False, widget=forms.CheckboxSelectMultiple, choices=TIME_LENGTH_CHOICES)
+    sort_by = forms.ChoiceField(required=False, widget=forms.RadioSelect, choices=SORT_BY_CHOICES)
+    sort_using = forms.ChoiceField(required=False, widget=forms.RadioSelect, choices=SORT_BY_DATA_CHOICES)
+
+    class Meta():
+        # model = SearchFilters
+        fields = ['learning_style', 'time_length', 'sort_by', 'sort_using']
+        

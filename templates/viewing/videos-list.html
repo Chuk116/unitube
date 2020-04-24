@@ -2,31 +2,131 @@
 {% load static %}
 {% block content %}
 <head>
-    <link rel="stylesheet" href="{% static 'css/video-display.css' %}" />
+    <link rel="stylesheet" href="{% static 'videos/css/videos.css' %}" />
 </head>
-{% if videolist|length > 0 %}
-    {% for video in videolist %}
-    <div class="videos-list-panel">
-        <form method="POST" action="{% url 'video-page' video_id=video.uni_video_id %}">
-            <input type="hidden" id="video_id" name="video_id" value={{video.uni_video_id}}>
-            <h4><strong>{{video.title}}</strong></h4>
-            <div class="videos-list-video">
-                <iframe width="50%" height="100%" src="{{video.embed_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div class="container-fluid">
+    <div style="padding-left: .3%; padding-top: 1%; padding-bottom: 1%">
+        <p>
+            <a class="link" data-toggle="collapse" href="#filterCollapse" role="button" aria-expanded="false" aria-controls="collapseExample" style="background: none; border: none">
+                Advanced Search
+            </a>
+            <!-- <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" style="background-color: none !important;"> 
+            Advanced Search
+            </button> -->
+        </p>
+        <div class="collapse" id="filterCollapse">
+            <div class="card card-body">
+                <form name="filterForm" method='POST'>
+                    {% csrf_token %}
+                    <div class="container">
+                        <div class="row">
+                        <div class="col-sm">
+                            <strong>{{ filterForm.learning_style.label }}</strong><hr>
+                            {% for radio in filterForm.learning_style %}
+                                <label for="{{ radio.label }}">
+                                    <p>{{ radio.tag }} {{ radio.choice_label }}</p>
+                                </label>
+                                <br>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm">
+                            <strong>{{ filterForm.time_length.label }}</strong> <hr>
+                            {% for radio in filterForm.time_length %}
+                                <label for="{{ radio.label }}">
+                                    <p>{{ radio.tag }} {{ radio.choice_label }}</p>
+                                </label>
+                                <br>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm">
+                            <strong>{{ filterForm.sort_by.label }}</strong> <hr>
+                            {% for radio in filterForm.sort_by %}
+                                <label for="{{ radio.label }}">
+                                    <p>{{ radio.tag }} {{ radio.choice_label }}</p>
+                                </label>
+                                <br>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm">
+                            <strong>{{ filterForm.sort_using.label }}</strong> <hr>
+                            {% for radio in filterForm.sort_using %}
+                                <label for="{{ radio.label }}">
+                                    <p>{{ radio.tag }} {{ radio.choice_label }}</p>
+                                </label>
+                                <br>
+                            {% endfor %}
+                        </div>
+                        </div>
+                        <div class="row" style="justify-content: center !important;">
+                            <div style="padding-right: 1%">
+                                <button class="btn btn-primary" onclick="document.filterForm.action='/search/0/'" type="submit"> 
+                                    Search
+                                </button> 
+                            </div>
+                            {% if user.is_authenticated %}
+                                <div>
+                                    <button class="btn btn-primary" onclick="document.filterForm.action='/search/1/'" type="submit"> 
+                                        Save and Search
+                                    </button> 
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="videos-list-des">
-                <p>{{video.avg_rating}} &#x2B50 ({{video.num_ratings}})</p>
-                <p><b>Posted by:</b> {{video.user.username}}</p>
-                <p><b>Description:</b> {{video.description}}</p>
-            </div>
-            {% csrf_token %}
-            <button type='submit'>View</button>
-        </form>
-        <b><hr></b>
+        </div>
     </div>
-    {% endfor %}
-{% else %}
-{% include 'viewing/no-videos.html' %}
-{% endif %}
-<br><br>
-<a href="{% url 'home' %}">Home</a>
+    {% if videolist|length > 0 %}
+        {% for video in videolist %}
+        <div class="videos-list-panel">
+            <div class="videos-list-content" style="padding: .1rem;">
+                <a class="info-link" href="{% url 'video-page' video_id=video.uni_video_id %}">
+                    <div class="row">
+                        <div class="videos-list-video col-sm-2">
+                            <!-- <iframe width="100%" height="100%" src="{{video.embed_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+                            <img src="{{video.youtubedata.thumbnail_link}}" width="100%">
+                            <p style="text-align: center; padding-top: 2%">{{video.class_choice}}</p>
+                        </div>
+                        <div class="videos-list-des col-sm">
+                            <h4><strong>{{video.title}}</strong></h4>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <p style="color:gray">{{video.user.username}} | {{video.avg_rating}} &#x2B50 ({{video.num_ratings}}) | {{video.num_views}} views</p>
+                                </div>
+                            </div>
+                            <p style="color:gray; font-size: 12px !important;">{{video.description}}</p>
+                        </div>
+                    </div>
+                    <div class="dropdown" style="text-align: center;">
+                        <!-- <a href="#" class="dropdown-toggle" data-toggle="collapse">Youtube Data</a> -->
+                        <p>
+                            <a data-toggle="collapse" href="#{{video.uni_video_id}}" role="button" aria-expanded="false" aria-controls="collapseExample" style="background: none; border: none">
+                                Youtube Data
+                            </a>
+                        </p>
+                        <div class="collapse" id="{{video.uni_video_id}}">
+                            <div class="card card-body">
+                                <div class='videos-page-ytb-data-wrapper'>
+                                    <p>{{video.youtubedata.title}}</p>
+                                    <div class='videos-page-ytb-data-likes-views-wrap'></div>
+                                        <div class='videos-page-ytb-data-views-comm' style="color:gray">
+                                            {{video.youtubedata.num_views}} views | {{video.youtubedata.num_comments}} comments
+                                        </div>
+                                        <i class="fa fa-thumbs-up" aria-hidden="true"></i>{{video.youtubedata.num_likes}}  <i class="fa fa-thumbs-down" aria-hidden="true"></i> {{video.youtubedata.num_dislikes}}
+                                    </div>
+                                    <br>
+                                    <p>{{video.youtubedata.description}}</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </a>
+            </div>
+            <b><hr></b>
+        </div>
+        {% endfor %}
+    {% else %}
+    {% include 'viewing/no-videos.html' %}
+    {% endif %}
+</div>
 {% endblock %}

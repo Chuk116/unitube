@@ -2,24 +2,24 @@
 {% load static %}
 {% block content %}
 <body>
-    <h1>Post A Video</h1>
-    <form method="post">
-        {% csrf_token %}
-        {% for field in form %}
-            <p>
-            {{ field.label_tag }}<br>
-            {{ field }}
-            {% if field.help_text %}
-                <small style="color: grey">{{ field.help_text }}</small>
-            {% endif %}
-            {% for error in field.errors %}
-                <p style="color: red">{{ error }}</p>
+    <div style="padding:.1rem;">
+        <h1>Post A Video</h1>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <p>
+                {{ field.label_tag }}<br>
+                {{ field }}
+                {% if field.help_text %}
+                    <small style="color: grey">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <p style="color: red">{{ error }}</p>
+                {% endfor %}
+                </p>
             {% endfor %}
-            </p>
-        {% endfor %}
-        <button type="submit">Post</button>
-    </form>
-    <br><br>
-    <a href="{% url 'home' %}">Home</a>
+            <button type="submit">Post</button>
+        </form>
+    </div>
 </body>
 {% endblock %}

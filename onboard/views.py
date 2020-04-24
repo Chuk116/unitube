@@ -9,6 +9,7 @@ from .forms import SignUpForm, LoginForm
 from account.forms import EditProfileForm
 from videos.forms import SearchForm
 from account.models import Profile
+from videos.models import SearchFilters
 
 def signup(request):
     if request.method == 'POST':
@@ -17,6 +18,7 @@ def signup(request):
         if formUser.is_valid() and formProf.is_valid():
             user = formUser.save()
             Profile.objects.create(user=user, learning_style=formProf.cleaned_data['learning_style'], year_in_school=formProf.cleaned_data['year_in_school'],major=formProf.cleaned_data['major'])
+            SearchFilters.objects.create(user=user)
         else:
           error_message=''
           username = request.POST['username']
@@ -37,6 +39,8 @@ def signup(request):
 
 def login(request):
     searchForm = SearchForm()
+    if request.user.is_authenticated:
+        return redirect('home')
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -49,16 +53,22 @@ def login(request):
                 auth_login(request, user)
                 context = {'searchForm': searchForm,}
                 # return redirect('admin/login')
-                return render(request, '../templates/home.html', context=context)
+                #return render(request, '../templates/homepage.html', context=context)
+                return redirect('home')
             else:
                 # return invalid login error message
-                return render(request, '../templates/home.html', {'form': form, 'error_message': "Incorrect username and/or password"})
+                return render(request, '../templates/login.html', {'form': form, 'error_message': "Incorrect username and/or password"})
     else:
         form = LoginForm()
     
     context = {'searchForm': searchForm,
     'form': form,}
-    return render(request, '../templates/home.html', context=context)
+    return render(request, '../templates/login.html', context=context)
+
+def home(request):
+    searchForm = SearchForm()
+    context = {'searchForm': searchForm}
+    return render(request, '../templates/homepage.html', context=context)
 
 def logout(request):
     auth_logout(request)

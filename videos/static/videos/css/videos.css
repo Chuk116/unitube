@@ -3,15 +3,25 @@
     flex-direction: row;
 }
 
-div.header {
-    display: inline;
-}
-
-p.header {
-    display: inline;
-}
+/* a {
+    color: #C92D39;
+} */
 
 .videos-page-ytb-data-likes-views {
     display: flex;
     flex-direction: row;
+}
+
+.videos-page-videoWrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+  }
+
+.videos-page-videoWrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }

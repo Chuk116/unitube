@@ -10,94 +10,145 @@
     <link rel="stylesheet" href="{% static 'videos/css/videos.css' %}">
     <!-- <script src="{% static 'admin/js/actions.js' %}"></script> -->
 </head>
-<p><b>{{video.title}}</b></p>
-<iframe width="50%" height="100%" src="{{video.embed_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<div>
-<p style="float: left">{{video.user.username}}</p>
-<p id='user-rating'></p>
-</div>
-<input type='hidden' id='selected_rating' value='{{rating}}'>
-<hr>
 
-<p>{{video.avg_rating}} &#x2B50</p>
-<p>{{video.description}}</p>
-<hr>
-<div class='videos-page-ytb-data-wrapper'>
-    <p>{{video.youtubedata.title}}</p>
-    <div class='videos-page-ytb-data-likes-views-wrap'></div>
-        <div class='videos-page-ytb-data-views' style="color:gray">
-            {{video.youtubedata.num_views}} views
-        </div>
-        <i class="fa fa-thumbs-up" aria-hidden="true"></i>{{video.youtubedata.num_likes}}  <i class="fa fa-thumbs-down" aria-hidden="true"></i> {{video.youtubedata.num_dislikes}}
-    </div>
-    <p>{{video.youtubedata.description}}</p>
-</div>
-<!-- Script for rating feature -->
-<script>
-    options1 = {
-        emoji: 'star',
-        rating: parseInt('{{rating}}'),
-        count: 5,
-        fontSize: 16,
-        inputName: 'user-rating',
-        onUpdate: function() {
-            var new_rating = $('.emoji-rating').val();
-            // Prevents multiple database accesses for same data click
-            if (new_rating != $('#selected_rating').val()) {
-                console.log($('.emoji-rating').val());
-                post_data = {
-                    'uni_video_id': $('#this_video').val(),
-                    'rating': $('.emoji-rating').val(),
-                    csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').attr('value'),
-                }
-                $.ajax({
-                        type: "POST",
-                        url: "{% url 'post-rating' %}",
-                        data: post_data,
-                        success:function(response){ 
-                            console.log('done')
-                            $('#selected_rating').val(new_rating)
-                        }
-                    });
-            }
-        }
-    }
-    $('#user-rating').emojiRating(options1);
-</script>
-<!--  -->
-
-<div id='num_comments'><p><b>{{video.commentthread.num_comments}} Comments</b></p></div>
-<form id='comment-form' method='POST'> {% csrf_token %}
-    <input type='hidden' id='this_video' value='{{ video.uni_video_id }}'/>
-    <input type='hidden' id='this_thread' value='{{ video.commentthread.pk }}'/>
-    <input type='hidden' id='class_' value='{{ video.class_choice }}'/>
-    <div class='form-group row'>
-        {% render_field commentForm.message %}
-        <!-- <div style="padding-left: 5px;"> -->
-        <button id='chat-send-button' type='submit'><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+<div class="container-fluid">
+    <div style="padding: .1rem">
+        {% if not user.is_authenticated %}
+        <p style="text-align: center; padding-top:1%;"><a href="{% url 'login' %}">Login</a> or <a href="{% url 'signup' %}">Signup</a> for more features.</p>
+        {% endif %}
+        <br>
+        <!-- <div class="video-page-video" style="height: 50%"> -->
+            <!-- <div class="row"> -->
+                <div class="videos-page-videoWrapper">
+                    <iframe width="360px" height="149px" src="{{video.embed_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            <!-- </div> -->
         <!-- </div> -->
-    </div>
-</form>
-<div id='comment-section'>
-    <div id='new_comments'></div>
-    {% for comment in video.commentthread.comments.all %}
-    <div id='comment'>
-        <div id='comment-header' style="overflow: hidden;">
-            <p style="float: left;">{{ comment.user }}</p>
-            <p style="float: right;">{{ comment.timestamp }}</p>
+        <div class="row" style="padding-top:2%">
+            <div class="col-sm-6">
+                <h4><strong>{{video.title}}</strong></h4>
+            </div>
         </div>
-        <div id='comment-body'>
-            <p>{{ comment.message }}</p>
-        </div>
-        <div id='voting-reply-body'>
-            <button id='chat-send-button' type='submit'><i class="fa fa-thumbs-up" aria-hidden="true"></i></button>
-            <button id='chat-send-button' type='submit'><i class="fa fa-thumbs-down" aria-hidden="true"></i></button>
-        </div>
-    </div>
-    <hr>
-    {% endfor %}
-</div>
 
+        <input type='hidden' id='selected_rating' value='{{rating}}'>
+        <div class="row">
+            <div class='col-sm-12 video-page-quick-info-wrapper'>
+                <p>{{video.avg_rating}} &#x2B50 ({{video.num_ratings}}) | {{video.num_views}} views | {{video.timestamp}}</p>
+            </div>
+        </div>
+        {% if user.is_authenticated %}
+        <div class="row" style="padding-left: 0.8rem">
+            <pre style="padding: .2rem"><p id='user-rating'></p></pre>
+         </div>
+        {% endif %}
+        <hr>
+        <p>{{video.user.username}}</p>
+        <p>{{video.description}}</p>
+        <hr>
+        <div class="dropdown" style="text-align: center;">
+            <!-- <a href="#" class="dropdown-toggle" data-toggle="collapse">Youtube Data</a> -->
+            <p>
+                <a data-toggle="collapse" href="#youtube_data" role="button" aria-expanded="false" aria-controls="collapseExample" style="background: none; border: none">
+                    Youtube Data
+                </a>
+            </p>
+            <div class="collapse" id="youtube_data">
+                <div class="card card-body">
+                    <div class='videos-page-ytb-data-wrapper'>
+                        <p>{{video.youtubedata.title}}</p>
+                        <div class='videos-page-ytb-data-likes-views-wrap'></div>
+                            <div class='videos-page-ytb-data-views' style="color:gray">
+                                {{video.youtubedata.num_views}} views
+                            </div>
+                            <i class="fa fa-thumbs-up" aria-hidden="true"></i>{{video.youtubedata.num_likes}}  <i class="fa fa-thumbs-down" aria-hidden="true"></i> {{video.youtubedata.num_dislikes}}
+                        </div>
+                        <br>
+                        <p>{{video.youtubedata.description}}</p>
+                </div>
+            </div>
+        </div>
+        <!-- <div class='videos-page-ytb-data-wrapper'>
+            <p>{{video.youtubedata.title}}</p>
+            <div class='videos-page-ytb-data-likes-views-wrap'></div>
+                <div class='videos-page-ytb-data-views' style="color:gray">
+                    {{video.youtubedata.num_views}} views
+                </div>
+                <i class="fa fa-thumbs-up" aria-hidden="true"></i>{{video.youtubedata.num_likes}}  <i class="fa fa-thumbs-down" aria-hidden="true"></i> {{video.youtubedata.num_dislikes}}
+            </div>
+            <p>{{video.youtubedata.description}}</p>
+        </div> -->
+    {% if user.is_authenticated %}
+        <!-- Script for rating feature -->
+        <script>
+            options1 = {
+                emoji: 'star',
+                rating: parseInt('{{rating}}'),
+                count: 5,
+                fontSize: 20,
+                inputName: 'user-rating',
+                onUpdate: function() {
+                    var new_rating = $('.emoji-rating').val();
+                    // Prevents multiple database accesses for same data click
+                    if (new_rating != $('#selected_rating').val()) {
+                        console.log($('.emoji-rating').val());
+                        post_data = {
+                            'uni_video_id': $('#this_video').val(),
+                            'rating': $('.emoji-rating').val(),
+                            csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').attr('value'),
+                        }
+                        $.ajax({
+                                type: "POST",
+                                url: "{% url 'post-rating' %}",
+                                data: post_data,
+                                success:function(response){ 
+                                    console.log('done')
+                                    $('#selected_rating').val(new_rating)
+                                }
+                            });
+                    }
+                }
+            }
+            $('#user-rating').emojiRating(options1);
+        </script>
+    {% endif %}
+        <br><br>
+        <div id='num_comments'><p><b>{{video.commentthread.num_comments}} Comments</b></p></div>
+
+        {% if user.is_authenticated %}
+        <form id='comment-form' method='POST'> {% csrf_token %}
+            <input type='hidden' id='this_video' value='{{ video.uni_video_id }}'/>
+            <input type='hidden' id='this_thread' value='{{ video.commentthread.pk }}'/>
+            <input type='hidden' id='class_' value='{{ video.class_choice }}'/>
+            <div class='form-group row'>
+                {% render_field commentForm.message %}
+                <!-- <div style="padding-left: 5px;"> -->
+                <button id='chat-send-button' type='submit'><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+                <!-- </div> -->
+            </div>
+        </form>
+        {% endif %}
+        <div id='comment-section'>
+            <div id='new_comments'></div>
+            {% for comment in video.commentthread.comments.all %}
+            <div id='comment'>
+                <div id='comment-header' style="overflow: hidden;">
+                    <p style="float: left;">{{ comment.user }}</p>
+                    <p style="float: right;">{{ comment.timestamp }}</p>
+                </div>
+                <div id='comment-body'>
+                    <p>{{ comment.message }}</p>
+                </div>
+                <div id='voting-reply-body'>
+                    <button id='chat-send-button' type='submit'><i class="fa fa-thumbs-up" aria-hidden="true"></i></button>
+                    <button id='chat-send-button' type='submit'><i class="fa fa-thumbs-down" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <hr>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
 <script>
     var formData = $("#comment-form");
     var msgInput = $("#id_message");

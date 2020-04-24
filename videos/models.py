@@ -1,14 +1,44 @@
 from django.db import models
 from django.contrib.auth.models import User
+from multiselectfield import MultiSelectField
+from account.models import LEARN_STYLES_CHOICES
 
 CLASS_CHOICES = [
     ('All', 'All'),
+    ('Cos109', 'Cos109'),
     ('Cos126', 'Cos126'),
     ('Cos217', 'Cos217'),
     ('Cos226', 'Cos226'),
+    ('Cos306', 'Cos306'),
+    ('Cos314', 'Cos314'),
+    ('Cos315', 'Cos315'),
+    ('Cos320', 'Cos320'),
     ('Cos333', 'Cos333'),
     ('Cos340', 'Cos340'),
 ]
+
+TIME_LENGTH_CHOICES = [
+    ('short', 'Short (0 - 5 minutes)'),
+    ('medium', 'Medium (5 - 15 minutes)'),
+    ('semi-long', 'Semi-Long (15 - 25 minutes)'),
+    ('long', 'Long (25+ minutes)'),
+]
+
+SORT_BY_CHOICES = [
+    ('Relevance', 'Relevance'),
+    ('TimeS', 'Shortest Time'),
+    ('Approval', 'Approval (Rating/Likes)'),
+    ('Views', 'Most Views'),
+    ('Comments', 'Most Comments'),
+    ('TimeL', 'Longest Time')
+]
+
+SORT_BY_DATA_CHOICES = [
+    ('Unitube', 'Unitube Data'),
+    ('Youtube', 'Youtube Data'),
+]
+
+
 
 # Create your models here.
 class Video(models.Model):
@@ -30,12 +60,13 @@ class YoutubeData(models.Model):
     title = models.TextField(default='')
     description = models.TextField(default='')
     lang = models.TextField(default='en')
-    time_length = models.TextField(default='0')
+    time_length = models.IntegerField(default=0)
     num_views = models.IntegerField(default=0)
     num_likes = models.IntegerField(default=0)
     num_dislikes = models.IntegerField(default=0)
     num_comments = models.IntegerField(default=0)
     tags = models.CharField(max_length=3000, blank=True)
+    thumbnail_link = models.TextField(default='', blank=True)
 
 class CommentThread(models.Model):
     video      = models.OneToOneField(Video, on_delete=models.CASCADE)
@@ -64,3 +95,10 @@ class Rating(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.IntegerField(default=0)
+
+class SearchFilters(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    learning_style = models.CharField(default='', max_length=3000, choices=LEARN_STYLES_CHOICES)
+    time_length = MultiSelectField(default='', choices=TIME_LENGTH_CHOICES)
+    sort_by = models.CharField(default='Relevance', max_length=3000, choices=SORT_BY_CHOICES)
+    sort_using = models.CharField(max_length=3000, default='Unitube', choices=SORT_BY_DATA_CHOICES)
