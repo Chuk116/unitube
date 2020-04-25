@@ -9,7 +9,7 @@ from .forms import SignUpForm, LoginForm
 from account.forms import EditProfileForm
 from videos.forms import SearchForm
 from account.models import Profile
-from videos.models import SearchFilters
+from videos.models import SearchFilters, ClassFilters
 
 def signup(request):
     if request.method == 'POST':
@@ -19,6 +19,7 @@ def signup(request):
             user = formUser.save()
             Profile.objects.create(user=user, learning_style=formProf.cleaned_data['learning_style'], year_in_school=formProf.cleaned_data['year_in_school'],major=formProf.cleaned_data['major'])
             SearchFilters.objects.create(user=user)
+            ClassFilters.objects.create(user=user)
         else:
           error_message=''
           username = request.POST['username']
@@ -38,7 +39,6 @@ def signup(request):
 
 
 def login(request):
-    searchForm = SearchForm()
     if request.user.is_authenticated:
         return redirect('home')
     if request.method == 'POST':
@@ -51,9 +51,7 @@ def login(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 auth_login(request, user)
-                context = {'searchForm': searchForm,}
-                # return redirect('admin/login')
-                #return render(request, '../templates/homepage.html', context=context)
+                context = {'query': '',}
                 return redirect('home')
             else:
                 # return invalid login error message
@@ -61,13 +59,15 @@ def login(request):
     else:
         form = LoginForm()
     
-    context = {'searchForm': searchForm,
-    'form': form,}
+    context = {'form': form,}
     return render(request, '../templates/login.html', context=context)
 
 def home(request):
-    searchForm = SearchForm()
-    context = {'searchForm': searchForm}
+    if 'query' in request.session:
+        query = request.session['query']
+    else:
+        query = ''
+    context = {'query': query}
     return render(request, '../templates/homepage.html', context=context)
 
 def logout(request):

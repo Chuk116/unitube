@@ -18,7 +18,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     </head>
-    <!-- <h1>Hi, {{user.username}}</h1> -->
+
     <header>
     <div class="container-fluid">
         <nav class="navbar navbar-expand-md navbar-custom sticky-top" style="background-color: white !important;">
@@ -30,16 +30,12 @@
               </button>
         
             <div class="collapse navbar-collapse" id="navbarCollapse">
-                <form class="form-inline ml-auto" method='POST' action="/search/">
-                    {% csrf_token %}
+                <div class="form-inline ml-auto">
                     <div class="form-inline searchform-txtbox">
-                        {% render_field searchForm.search class="form-control" style="width: 100%;"%}
+                        <input type="text" name="search" class="form-control" placeholder="Search" style="width: 100%;" required="true" id="id_search" value="{{query}}">
                     </div>
-                    <div class="form-inline">
-                        {% render_field searchForm.class_ class="form-control"%}
-                    </div>
-                    <button id="btn btn-outline-light" class="form-control" type="submit"><i class="fa fa-search"></i></button>
-                </form>
+                    <button name="search_button" id="btn btn-outline-light" class="form-control" onclick=search()><i class="fa fa-search"></i></button>
+                </div>
             </div>
             {% if user.is_authenticated %}
             <div class="new-post-lnk" style="padding-right: .2rem;">
@@ -56,7 +52,7 @@
                   </a>
                   <div class="dropdown-menu dropdown-menu-right">
                     {% if user.is_authenticated %}
-                    <a class="dropdown-item" href="{% url 'view_profile' %}">Profile</a>
+                    <a class="dropdown-item" href="{% url 'my_profile' %}">Profile</a>
                     <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
                     {% else %}
                     <a class="dropdown-item" href="{% url 'login' %}">Login</a>
@@ -74,14 +70,27 @@
     <body style="font-family: 'Raleway', 'sans-serif'; font-size: 12pt;">
         <div class="under-nav">
             {% block content %}
-            <script>
-                if ( window.history.replaceState ) {
-                    window.history.replaceState( null, null, window.location.href );
-                }
-            </script>
             {% endblock %}
         </div>
     </body>
 
-    
+    <script>
+        var input = document.getElementById("id_search");
+        function search() {
+            if ($("#id_search").val() != '') {
+                window.location.href = "/search/q=" + $("#id_search").val() + "/"
+            }
+        
+        }
+
+        input.addEventListener("keyup", function(event) {
+            // Number 13 is the "Enter" key on the keyboard
+            if (event.keyCode === 13) {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                // Trigger the button element with a click
+                document.getElementsByName("search_button")[0].click();
+        }
+    });
+    </script>
 </html>

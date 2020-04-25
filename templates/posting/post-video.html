@@ -1,25 +1,78 @@
 {% extends 'base-app.html' %}
 {% load static %}
+{% load widget_tweaks %}
 {% block content %}
+<head>
+    <link rel="stylesheet" href="{% static 'videos/css/videos.css' %}">
+</head>
 <body>
-    <div style="padding:.1rem;">
-        <h1>Post A Video</h1>
-        <form method="post">
-            {% csrf_token %}
-            {% for field in form %}
-                <p>
-                {{ field.label_tag }}<br>
-                {{ field }}
-                {% if field.help_text %}
-                    <small style="color: grey">{{ field.help_text }}</small>
-                {% endif %}
-                {% for error in field.errors %}
-                    <p style="color: red">{{ error }}</p>
-                {% endfor %}
-                </p>
-            {% endfor %}
-            <button type="submit">Post</button>
-        </form>
+    <div class="container">
+        <div style="padding:.1rem;">
+            <h1 style="text-align: center;" >Post A Video</h1>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group row" style="text-align: center;">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <label> {{form.video_link.label_tag }} </label>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        {% render_field form.video_link class="form-control" %}
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        {% for error in form.video_link.errors %}
+                            <p style="color: red">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group row" style="text-align: center;">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <label> {{form.title.label_tag }} </label>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        {% render_field form.title class="form-control" %}
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        {% for error in form.title.errors %}
+                            <p style="color: red">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group row" style="text-align: center;">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <label> {{form.description.label_tag }} </label>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        {% render_field form.description class="form-control" %}
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        {% for error in form.description.errors %}
+                            <p style="color: red">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group row" style="text-align: center;">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <label> {{form.class_choice.label_tag }} </label>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12col-lg-12">
+                        {% render_field form.class_choice class="form-control" style="text-align: center;"%}
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        {% for error in form.class_choice.errors %}
+                            <p style="color: red">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                    <!-- {% if field.help_text %}
+                        <small style="color: grey">{{ field.help_text }}</small>
+                    {% endif %} -->
+                
+                    <div class="post-video-button-wrapper">
+                        <button class="btn btn-primary" type="submit">Post</button>
+                    </div>
+
+            </form>
+        </div>
     </div>
 </body>
 {% endblock %}

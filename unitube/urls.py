@@ -25,11 +25,11 @@ import django_cas_ng
 
 urlpatterns = [
     path('edit-profile/', account_views.edit_profile, name="edit_profile"),
-    path('profile/', account_views.view_profile, name="view_profile"),
-    
-    path('search/', videos_views.search, name="search-videos"),
-    # path('search/q=<str:query>c=<str:class_>/', videos_views.search, name="search-videos"),
-    path('search/<int:s>/', videos_views.filter_search, name="filter-search"),
+    path('my-profile/', account_views.my_profile, name="my_profile"),
+    path('view-profile/<str:username>/', account_views.view_profile, name="view_profile"),
+    # path('search/', videos_views.search, name="search-videos"),
+    path('search/q=<str:query>/', videos_views.search, name="search-videos"),
+    path('search/q=<str:query>/<int:s>/', videos_views.filter_search, name="filter-search"),
     path('post-video/', videos_views.post_video, name="post-video"),
     path('video-page/<str:video_id>/', videos_views.video_page, name="video-page"),
     path('post-comment/', videos_views.post_comment, name="post-comment"),

@@ -7,22 +7,21 @@
 <div class="container-fluid">
     <div style="padding: .1rem;">
         <div style="text-align: center;">
-            <h1 style="text-align: center;">{{user.username}}</h1>
-            <a href="{% url 'edit_profile' %}">Edit</a>
+            <h1 style="text-align: center;">{{target_user.username}}</h1>
         </div>
         <hr>
             <div class="row" style="text-align: center;">
                 <div class="col-sm-4">
                     <h4><strong>Primary Learning Style</strong></h4>
-                    <p>{{user.profile.learning_style}}</p>
+                    <p>{{target_user.profile.learning_style}}</p>
                 </div>
                 <div class="col-sm-4">
                     <h4><strong>Year In School</strong></h4>
-                    <p>{{user.profile.year_in_school}}</p>
+                    <p>{{target_user.profile.year_in_school}}</p>
                 </div>
                 <div class="col-sm-4">
                     <h4><strong>Major</strong></h4>
-                    <p>{{user.profile.major}}</p>
+                    <p>{{target_user.profile.major}}</p>
                 </div>
             </div>
         </div>

@@ -2,9 +2,11 @@
 {% load static %}
 {% block content %}
 <body>
-    <h1>Thank you!</h1>
-    <p>You have successfully posted your video</p>
-    <p>Click <a href="{% url 'post-video' %}">here</a> to post another video and 
-        <a href="{% url 'home' %}">here</a> to return to the homepage.</p>
+    <div class="container" style="text-align: center;">
+        <h1>Thank you!</h1>
+        <p>You have successfully posted your video</p>
+        <p>Click <a href="{% url 'post-video' %}">here</a> to post another video and 
+            <a href="{% url 'home' %}">here</a> to return to the homepage.</p>
+    </div>
 </body>
 {% endblock %}

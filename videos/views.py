@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 # from cas.decorators import gateway
-from .forms import SearchForm, PostForm, CommentForm, SearchFilterForm
+from .forms import SearchForm, PostForm, CommentForm, SearchFilterForm, ClassFilterForm
 from .search import search_videos
-from .models import Video, CommentThread, Comment, Rating, YoutubeData, SearchFilters
+from .models import Video, CommentThread, Comment, Rating, YoutubeData, SearchFilters, ClassFilters
 from uniauth.decorators import login_required as cas_login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
@@ -13,50 +13,36 @@ import urllib.request
 import json
 
 # @gateway()
-def search(request):
-    searchForm = SearchForm()
+def search(request, **kwargs):
     filterForm = SearchFilterForm(initial={'sort_using': 'Unitube', 'sort_by':'Relevance'})
+    classFilterForm = ClassFilterForm(initial={'classes': 'General'})
     filters = []
     if request.user.is_authenticated:
         filters = _getSearchFilters(request.user)
-        initial_data = {
+        class_filters = _getClassFilters(request.user)
+        initial_data_filter = {
             "learning_style": filters[0],
             "time_length": filters[1],
             "sort_by": filters[2],
             "sort_using": filters[3],
         }
-        filterForm = SearchFilterForm(initial=initial_data)
+        filterForm = SearchFilterForm(initial=initial_data_filter)
+        classFilterForm = ClassFilterForm(initial={'classes':class_filters})
     else:
         filters = ['', [], 'Relevance', 'Unitube']
+        class_filters = ['General']
 
-    context = {'searchForm': searchForm, 'filterForm': filterForm}
     
-    if request.method == 'POST':
-        searchForm = SearchForm(request.POST)
-        searchquery = ''
-        class_selection = ''
-        if searchForm.is_valid():
-            # searchForm.save()
-            searchquery = request.POST.get('search')
-            class_choice = request.POST.get('class_')
-
-        videolist = search_videos(searchquery, class_choice, filters)
-            
-        context['videolist'] = videolist
-        context['searchForm'] = searchForm
-
-
-        request.session['query'] = searchquery
-        request.session['class_'] = class_choice
+    searchquery = kwargs.get('query')
+    request.session['query'] = searchquery
+    videolist = search_videos(searchquery, class_filters, filters)
+    context = {'query': searchquery, 'filterForm': filterForm, 'classFilterForm': classFilterForm, 'videolist': videolist}
 
     return render(request, '../templates/viewing/videos-list.html', context=context)
 
 def filter_search(request, **kwargs):
-    searchForm, query, class_choice = _getSearchCookies(request)
-    context = {
-        'searchForm': searchForm,
-    }
-
+    query = kwargs.get('query')
+    context = {}
     if request.method == 'POST':
         filterForm = SearchFilterForm()
         learn_style = request.POST.get('learning_style')
@@ -66,37 +52,44 @@ def filter_search(request, **kwargs):
         sort_by = '' if sort_by is None else sort_by
         sort_using = request.POST.get('sort_using')
         sort_using = 'Unitube' if sort_using is None else sort_using
+        class_filters = request.POST.getlist('classes')
         filters = [learn_style, time_length, sort_by, sort_using]
 
         context['filterForm'] = filterForm
-        videolist = search_videos(query, class_choice, filters)
+        videolist = search_videos(query, class_filters, filters)
 
         if kwargs.get('s') == 1:
             SearchFilters.objects.filter(user=request.user).update(learning_style=learn_style, time_length=time_length, sort_by=sort_by, sort_using=sort_using)
+            ClassFilters.objects.filter(user=request.user).update(classes=class_filters)
         
         context['videolist'] = videolist
     
     if request.user.is_authenticated:
         filters = _getSearchFilters(request.user)
-        initial_data = {
+        class_filters = _getClassFilters(request.user)
+        initial_data_filter = {
             "learning_style": filters[0],
             "time_length": filters[1],
             "sort_by": filters[2],
             "sort_using": filters[3],
         }
-        filterForm = SearchFilterForm(initial=initial_data)
+        filterForm = SearchFilterForm(initial=initial_data_filter)
+        classFilterForm = ClassFilterForm(initial={'classes':class_filters})
     else:
         filterForm = SearchFilterForm(initial={'sort_using':'Unitube', 'sort_by': 'Relevance'})
+        classFilterForm = ClassFilterForm(initial={'classes': 'Unitube'})
 
         
 
     context['filterForm'] = filterForm
+    context['classFilterForm'] = classFilterForm
+    context['query'] = query
 
     return render(request, '../templates/viewing/videos-list.html', context=context)
 
 def post_video(request):
     if request.user.is_authenticated:
-        searchForm, _, _ = _getSearchCookies(request)
+        query = _getSearchCookies(request)
 
         if request.method == 'POST':
             form = PostForm(request.POST)
@@ -106,20 +99,20 @@ def post_video(request):
                     title=form.cleaned_data['title'], description=form.cleaned_data['description'], class_choice=form.cleaned_data['class_choice'])
                 CommentThread.objects.create(video=video)
                 _storeYoutubeData(video, form.cleaned_data['snippet_data'])
-                context = {'searchForm': searchForm}
+                context = {'query': query}
                 return render(request, '../templates/posting/post-video-success.html', context=context)
             else:
                 context = {
                     'form': form,
                     'error_message': "There was an error posting the video.",
-                    'searchForm': searchForm,
+                    'query': query,
                 }
                 # return invalid login error message
                 return render(request, '../templates/posting/post-video.html', context=context)
         else:
             form = PostForm()
 
-        context = {'form':form, 'searchForm':searchForm}
+        context = {'form':form, 'query':query}
         return render(request, '../templates/posting/post-video.html', context=context)
     else:
         return redirect('home')
@@ -127,7 +120,7 @@ def post_video(request):
 def video_page(request, **kwargs):
     uni_video_id = kwargs.get('video_id')
     video = Video.objects.get(uni_video_id=uni_video_id)
-    searchForm, _, _ = _getSearchCookies(request)
+    query = _getSearchCookies(request)
     rating = 0
     if request.user.is_authenticated:
         rating_obj_list = Rating.objects.filter(Q(video=video), Q(user=request.user))
@@ -137,7 +130,6 @@ def video_page(request, **kwargs):
 
     context = {
         'video': video,
-        'searchForm': searchForm,
         'commentForm': commentForm,
         'rating': rating
     }
@@ -201,38 +193,42 @@ def _storeYoutubeData(video, snippet_data):
     
     time_length_str = content_data['duration'][2:len(content_data['duration'])]
     time_length = 0
+    time_length_str_db = ''
     if 'H' in time_length_str:
         tl_H = time_length_str.split('H')
         tl_M = tl_H[1].split('M')
         tl_S = tl_M[1].split('S')
+        time_length_str_db = tl_H[0] + ":" + tl_M[0] + ":" + tl_S[0]
     elif 'M' in time_length_str:
         tl_H = [0]
         tl_M = time_length_str.split('M')
         tl_S = tl_M[1].split('S')
+        time_length_str_db = tl_M[0] + ":" + tl_S[0]
     else:
         tl_H = [0]
         tl_M = [0]
         tl_S = time_length_str.split('S')
+        time_length_str_db = "00" + ":" + tl_S[0]
+
 
     time_length = int(tl_H[0]) * 3600 + int(tl_M[0]) * 60 + int(tl_S[0])
 
     YoutubeData.objects.create(video=video,title=snippet_data['title'],description=snippet_data['description'],lang=lang,
     time_length=time_length,num_views=int(stats_data['viewCount']),num_likes=int(stats_data['likeCount']),num_dislikes=int(stats_data['dislikeCount']),
-    num_comments=int(stats_data['commentCount']), tags=tags, thumbnail_link=snippet_data['thumbnails']['high']['url'])
+    num_comments=int(stats_data['commentCount']), tags=tags, thumbnail_link=snippet_data['thumbnails']['high']['url'], time_length_str=time_length_str_db)
 
 def _getSearchFilters(user):
     searchFilter = SearchFilters.objects.get(user=user)
     filters = [searchFilter.learning_style, searchFilter.time_length, searchFilter.sort_by, searchFilter.sort_using]
     return filters
 
+def _getClassFilters(user):
+    classFilters = ClassFilters.objects.get(user=user)
+    return classFilters.classes
+
 def _getSearchCookies(request):
     if 'query' in request.session:
         query = request.session['query']
-        class_ = request.session['class_']
-        initial = {
-            'search': query,
-            'class_': class_,
-        }
-        return SearchForm(initial=initial), query, class_
+        return query
     else:
-        return SearchForm(), '', 'All'
+        return ''

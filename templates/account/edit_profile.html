@@ -1,23 +1,36 @@
 {% extends 'base-app.html' %}
 {% load static %}
 {% block content %}
-<div style="padding: .1rem">
-<h1>Edit Profile</h1>
-<form method="post">
-    {% csrf_token %}
-    {% for field in form %}
-        <p>
-            {{ field.label_tag }}<br>
-            {{ field }}
-            {% if field.help_text %}
-            <small style="color: grey">{{ field.help_text }}</small>
-            {% endif %}
-            {% for error in field.errors %}
-            <p style="color: red">{{ error }}</p>
-            {% endfor %}
-        </p>
-    {% endfor %}
-    <button type="submit">Update</button>
-</form>
+<head>
+    <link rel="stylesheet" href="{% static 'account/css/account.css' %}">
+</head>
+<div class="container-fluid">
+    <div style="padding: .1rem;">
+        <div style="text-align: center;">
+            <h1 style="text-align: center;">{{user.username}}</h1>
+        </div>
+        <hr>
+        <form method="post">
+            <div class="row" style="text-align: center;">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="col-sm-4">
+                            {{ field.label_tag }}<br>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small style="color: grey">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <p style="color: red">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+            </div>
+            <div class="update-button-wrapper">
+                <button class="btn btn-primary" type="submit">Update</button>
+            </div>
+        </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -6,9 +6,9 @@ import urllib.request
 import json
 
 class PostForm(forms.Form):
-    video_link = forms.CharField(max_length=100, widget=forms.Textarea(attrs={'cols': 10, 'rows': 1}))
-    title = forms.CharField(max_length=100, widget=forms.Textarea(attrs={'cols': 10, 'rows': 1}))
-    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={'cols': 10, 'rows': 10}))
+    video_link = forms.CharField(max_length=100, widget=forms.Textarea(attrs={'cols': 10, 'rows': 1, 'placeholder': 'Youtube link under Education or Science and Technology categories'}))
+    title = forms.CharField(max_length=100, widget=forms.Textarea(attrs={'cols': 10, 'rows': 1, 'placeholder': 'Short descriptive title'}))
+    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={'cols': 10, 'rows': 10, 'placeholder':'Short description of the video plus any useful hints (best start/end time, what\'s useful, etc...)' }))
     class_choice = forms.ChoiceField(choices=CLASS_CHOICES)
     
     class Meta:
@@ -27,10 +27,8 @@ class PostForm(forms.Form):
             class_choice = self.cleaned_data.get('class_choice')
             videos = Video.objects.filter(video_id=video_id)
             if videos.exists():
-                print('Video exists')
                 for video in videos:
                     if video.class_choice == class_choice:
-                        print('Video has error')
                         self.add_error('class_choice', 'This video has already been added for this class.')
                     else:
                         self.cleaned_data['video_id'] = video_id
@@ -145,4 +143,10 @@ class SearchFilterForm(forms.Form):
     class Meta():
         # model = SearchFilters
         fields = ['learning_style', 'time_length', 'sort_by', 'sort_using']
-        
+
+class ClassFilterForm(forms.Form):
+    CLASS_CHOICES.append(('All', 'All'))
+    classes = forms.ChoiceField(required=False, widget=forms.CheckboxSelectMultiple, choices=CLASS_CHOICES)
+    
+    class Meta():
+        fields = ['classes']

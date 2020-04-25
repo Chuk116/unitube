@@ -43,21 +43,19 @@ def _wordScore(query, trie):
 
     return score
 
-def search_videos(search_query, class_choice, filters):
-    if class_choice == 'All':
-        videolist = Video.objects.all()
-    else:
-        videolist = Video.objects.filter(class_choice=class_choice)
+def search_videos(search_query, class_filters, filters):
+    if class_filters == [] or class_filters == '':
+        return []
+    
+    videolist = _filterClasses(class_filters)
 
-    print(filters)
-    if len(filters) > 0:
-        videolist = _filterLearnStyle(videolist, filters[0])
-        videolist = _filterTimeLength(videolist, filters[1])
+    videolist = _filterLearnStyle(videolist, filters[0])
+    videolist = _filterTimeLength(videolist, filters[1])
 
     finalList = []
-    if (filters[2] == 'Relevance'):
-        finalList = _sortbyRelevance(search_query, videolist, filters[3])
-    elif (filters[2] == 'TimeS'):
+    videolist = _sortbyRelevance(search_query, videolist, filters[3])
+    
+    if (filters[2] == 'TimeS'):
         finalList = _sortbyTime(videolist, True)
     elif (filters[2] == 'TimeL'):
         finalList = _sortbyTime(videolist, False)
@@ -67,11 +65,22 @@ def search_videos(search_query, class_choice, filters):
         finalList = _sortbyViews(videolist, filters[3])
     elif (filters[2] == 'Comments'):
         finalList = _sortbyComments(videolist, filters[3])
+    else:
+        return videolist
 
     returnList = []
     for vidObj in finalList:
         returnList.append(vidObj.getVideo())
     return returnList
+
+def _filterClasses(class_filters):
+    if 'All' in class_filters:
+        return Video.objects.all()   
+    videolist = []
+    for class_ in class_filters:
+        videolist += list(Video.objects.filter(class_choice=class_))
+    
+    return videolist
 
 def _filterLearnStyle(videolist, learn_style):
     if learn_style == '': 
@@ -94,8 +103,6 @@ def _filterTimeLength(videolist, time_lengths):
     if 'semi-long' in time_lengths:
         new_video_list += list(filter(lambda video: video.youtubedata.time_length > 900 and video.youtubedata.time_length <= 1500, videolist))
     if 'long' in time_lengths:
-        # print(videolist[1].youtubedata.time_length)
-        # print(list(filter(lambda video: video.youtubedata.time_length > 1500, videolist)))
         new_video_list += list(filter(lambda video: video.youtubedata.time_length > 1500, videolist))
 
     return new_video_list
@@ -132,7 +139,6 @@ def _sortbyApproval(videolist, sort_using):
     return sorted(videolist, reverse=True)
 
 def _sortbyRelevance(search_query, videolist, sort_using):
-    print('Relevance')
     word_query = search_query.lower().split()
 
     finalList = []
@@ -140,8 +146,12 @@ def _sortbyRelevance(search_query, videolist, sort_using):
         score = 0.0
         titleTrie = Trie()
         descTrie = Trie()
-        title_words = video.title.lower().split()
-        desc_words = video.description.lower().split()
+        if (sort_using == 'Unitube'):
+            title_words = video.title.lower().split()
+            desc_words = video.description.lower().split()
+        else:
+            title_words = video.youtubedata.title.lower().split()
+            desc_words = video.youtubedata.title.lower().split()
 
         for word in title_words:
             titleTrie.insert(word)
@@ -151,10 +161,14 @@ def _sortbyRelevance(search_query, videolist, sort_using):
         score += _wordScore(word_query, titleTrie) * 2.0
         score += _wordScore(word_query, descTrie)
 
-        finalList.append(MatchedVideo(score, video))
+        if (score != 0.0):
+            finalList.append(MatchedVideo(score, video))
     
     finalList.sort(reverse=True)
-    return finalList
+    returnList = []
+    for vidObj in finalList:
+        returnList.append(vidObj.getVideo())
+    return returnList
 
 
 

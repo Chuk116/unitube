@@ -4,20 +4,25 @@
 <head>
     <link rel="stylesheet" href="{% static 'videos/css/videos.css' %}" />
 </head>
+
 <div class="container-fluid">
     <div style="padding-left: .3%; padding-top: 1%; padding-bottom: 1%">
         <p>
             <a class="link" data-toggle="collapse" href="#filterCollapse" role="button" aria-expanded="false" aria-controls="collapseExample" style="background: none; border: none">
-                Advanced Search
+                Filters
+            </a> |
+
+            <a class="link" data-toggle="collapse" href="#classesCollapse" role="button" aria-expanded="false" aria-controls="collapseExample" style="background: none; border: none">
+                Classes
             </a>
             <!-- <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" style="background-color: none !important;"> 
             Advanced Search
             </button> -->
         </p>
+        <form name="filterForm" method='POST' id="filterForm">
+            {% csrf_token %}
         <div class="collapse" id="filterCollapse">
             <div class="card card-body">
-                <form name="filterForm" method='POST'>
-                    {% csrf_token %}
                     <div class="container">
                         <div class="row">
                         <div class="col-sm">
@@ -59,42 +64,85 @@
                         </div>
                         <div class="row" style="justify-content: center !important;">
                             <div style="padding-right: 1%">
-                                <button class="btn btn-primary" onclick="document.filterForm.action='/search/0/'" type="submit"> 
+                                <button class="btn btn-primary" onclick=filterSearch() type="submit"> 
                                     Search
                                 </button> 
                             </div>
                             {% if user.is_authenticated %}
                                 <div>
-                                    <button class="btn btn-primary" onclick="document.filterForm.action='/search/1/'" type="submit"> 
+                                    <button class="btn btn-primary" onclick=saveFilterSearch() type="submit"> 
                                         Save and Search
                                     </button> 
                                 </div>
                             {% endif %}
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
+            <div class="collapse" id="classesCollapse">
+                <div class="card card-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm-12" style="text-align: center;">
+                                    <strong>{{ classFilterForm.classes.label }}</strong><hr>
+                                        <div class="row">
+                                            {% for radio in classFilterForm.classes %}
+                                                <div class="col-sm-2">
+                                                    <label for="{{ radio.label }}">
+                                                        <p style="padding-right:2%;">{{ radio.tag }} {{ radio.choice_label }}</p>
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                </div>
+                            </div>
+                            <div class="row" style="justify-content: center !important;">
+                                <div style="padding-right: 1%">
+                                    <button class="btn btn-primary" onclick=filterSearch() type="submit"> 
+                                        Search
+                                    </button> 
+                                </div>
+                                {% if user.is_authenticated %}
+                                    <div>
+                                        <button class="btn btn-primary" onclick=saveFilterSearch() type="submit"> 
+                                            Save and Search
+                                        </button> 
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </form>
     </div>
     {% if videolist|length > 0 %}
         {% for video in videolist %}
         <div class="videos-list-panel">
             <div class="videos-list-content" style="padding: .1rem;">
-                <a class="info-link" href="{% url 'video-page' video_id=video.uni_video_id %}">
-                    <div class="row">
+                <div class="row">
                         <div class="videos-list-video col-sm-2">
+                            <a class="info-link" href="{% url 'video-page' video_id=video.uni_video_id %}">
                             <!-- <iframe width="100%" height="100%" src="{{video.embed_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
                             <img src="{{video.youtubedata.thumbnail_link}}" width="100%">
-                            <p style="text-align: center; padding-top: 2%">{{video.class_choice}}</p>
+                            <p>{{video.youtubedata.time_length_str}}</p>
+                            </a>
                         </div>
                         <div class="videos-list-des col-sm">
-                            <h4><strong>{{video.title}}</strong></h4>
+                            <a class="info-link" href="{% url 'video-page' video_id=video.uni_video_id %}">
+                                <h4><strong>{{video.title}}</strong></h4>
+                            </a>
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <p style="color:gray">{{video.user.username}} | {{video.avg_rating}} &#x2B50 ({{video.num_ratings}}) | {{video.num_views}} views</p>
+                                    <p style="color:gray !important"><a href="/view-profile/{{video.user.username}}">{{video.user.username}} </a>
+                                        <a class="info-link" href="{% url 'video-page' video_id=video.uni_video_id %}">
+                                            | {{video.class_choice}} | {{video.avg_rating}} &#x2B50 ({{video.num_ratings}}) | {{video.num_views}} views
+                                        </a>
+                                    </p>
                                 </div>
                             </div>
-                            <p style="color:gray; font-size: 12px !important;">{{video.description}}</p>
+                            <a class="info-link" href="{% url 'video-page' video_id=video.uni_video_id %}">
+                                <p style="color:gray; font-size: 12px !important;">{{video.description}}</p>
+                            </a>
                         </div>
                     </div>
                     <div class="dropdown" style="text-align: center;">
@@ -107,7 +155,7 @@
                         <div class="collapse" id="{{video.uni_video_id}}">
                             <div class="card card-body">
                                 <div class='videos-page-ytb-data-wrapper'>
-                                    <p>{{video.youtubedata.title}}</p>
+                                    <a href="{{video.link}}" target="_blank"><p>{{video.youtubedata.title}}</p></a> 
                                     <div class='videos-page-ytb-data-likes-views-wrap'></div>
                                         <div class='videos-page-ytb-data-views-comm' style="color:gray">
                                             {{video.youtubedata.num_views}} views | {{video.youtubedata.num_comments}} comments
@@ -120,7 +168,6 @@
                         </div>
                         
                     </div>
-                </a>
             </div>
             <b><hr></b>
         </div>
@@ -129,4 +176,17 @@
     {% include 'viewing/no-videos.html' %}
     {% endif %}
 </div>
+
+<script>
+    function saveFilterSearch() {
+        if ($("#id_search").val() != '') {
+            document.filterForm.action = "/search/q=" + $("#id_search").val() + "/1/"
+        }
+    }
+    function filterSearch() {
+        if ($("#id_search").val() != '') {
+            document.filterForm.action = "/search/q=" + $("#id_search").val() + "/0/"
+        }
+    }
+</script>
 {% endblock %}

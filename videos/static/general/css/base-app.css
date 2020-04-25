@@ -78,7 +78,7 @@ html, body {
     width: 40px;
 }
 
-span .new-post-txt {
+.new-post-txt {
     vertical-align: middle;
     color: gray;
     margin: 0 auto;

@@ -4,7 +4,7 @@ from multiselectfield import MultiSelectField
 from account.models import LEARN_STYLES_CHOICES
 
 CLASS_CHOICES = [
-    ('All', 'All'),
+    ('General','General'),
     ('Cos109', 'Cos109'),
     ('Cos126', 'Cos126'),
     ('Cos217', 'Cos217'),
@@ -15,6 +15,7 @@ CLASS_CHOICES = [
     ('Cos320', 'Cos320'),
     ('Cos333', 'Cos333'),
     ('Cos340', 'Cos340'),
+    ('Cos424', 'Cos424'),
 ]
 
 TIME_LENGTH_CHOICES = [
@@ -61,6 +62,7 @@ class YoutubeData(models.Model):
     description = models.TextField(default='')
     lang = models.TextField(default='en')
     time_length = models.IntegerField(default=0)
+    time_length_str = models.TextField(default='00:00:00')
     num_views = models.IntegerField(default=0)
     num_likes = models.IntegerField(default=0)
     num_dislikes = models.IntegerField(default=0)
@@ -102,3 +104,7 @@ class SearchFilters(models.Model):
     time_length = MultiSelectField(default='', choices=TIME_LENGTH_CHOICES)
     sort_by = models.CharField(default='Relevance', max_length=3000, choices=SORT_BY_CHOICES)
     sort_using = models.CharField(max_length=3000, default='Unitube', choices=SORT_BY_DATA_CHOICES)
+
+class ClassFilters(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    classes = MultiSelectField(default='General', choices=CLASS_CHOICES)
