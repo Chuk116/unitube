@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_cas_ng',
     'multiselectfield',
 
     'onboard',
@@ -65,7 +64,7 @@ MIDDLEWARE = [
     # 'cas.middleware.CASMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_cas_ng.middleware.CASMiddleware',
+    # 'django_cas_ng.middleware.CASMiddleware',
 ]
 
 ROOT_URLCONF = 'unitube.urls'
@@ -88,7 +87,7 @@ TEMPLATES = [
 AUTHENTICATION_BACKENDS = (
     # 'uniauth.backends.CASBackend',
     'django.contrib.auth.backends.ModelBackend',
-    'django_cas_ng.backends.CASBackend',
+    # 'django_cas_ng.backends.CASBackend',
 )
 
 WSGI_APPLICATION = 'unitube.wsgi.application'

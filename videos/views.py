@@ -94,11 +94,8 @@ def post_video(request):
         if request.method == 'POST':
             form = PostForm(request.POST)
             if form.is_valid():
-                video = Video.objects.create(user=request.user, video_id=form.cleaned_data['video_id'], uni_video_id=form.cleaned_data['uni_video_id'],
-                    embed_link=form.cleaned_data['embed_link'], link=form.cleaned_data['video_link'], 
-                    title=form.cleaned_data['title'], description=form.cleaned_data['description'], class_choice=form.cleaned_data['class_choice'])
+                video = _storeYoutubeDataAndCreateVideo(form.cleaned_data['snippet_data'], request, form)
                 CommentThread.objects.create(video=video)
-                _storeYoutubeData(video, form.cleaned_data['snippet_data'])
                 context = {'query': query}
                 return render(request, '../templates/posting/post-video-success.html', context=context)
             else:
@@ -174,8 +171,8 @@ def post_rating(request):
         return HttpResponse('')
 
 # Stores the fetched youtube data for the specific video into the database
-def _storeYoutubeData(video, snippet_data):
-    video_id = video.video_id
+def _storeYoutubeDataAndCreateVideo(snippet_data, request, form):
+    video_id = form.cleaned_data['video_id']
     url_content = f"https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id={video_id}&key={YOUTUBE_API_KEY}"
     content_data = json.loads(urllib.request.urlopen(url_content).read())['items'][0]['contentDetails']
     url_stats = f"https://www.googleapis.com/youtube/v3/videos?part=statistics&id={video_id}&key={YOUTUBE_API_KEY}"
@@ -193,29 +190,19 @@ def _storeYoutubeData(video, snippet_data):
     
     time_length_str = content_data['duration'][2:len(content_data['duration'])]
     time_length = 0
-    time_length_str_db = ''
-    if 'H' in time_length_str:
-        tl_H = time_length_str.split('H')
-        tl_M = tl_H[1].split('M')
-        tl_S = tl_M[1].split('S')
-        time_length_str_db = tl_H[0] + ":" + tl_M[0] + ":" + tl_S[0]
-    elif 'M' in time_length_str:
-        tl_H = [0]
-        tl_M = time_length_str.split('M')
-        tl_S = tl_M[1].split('S')
-        time_length_str_db = tl_M[0] + ":" + tl_S[0]
-    else:
-        tl_H = [0]
-        tl_M = [0]
-        tl_S = time_length_str.split('S')
-        time_length_str_db = "00" + ":" + tl_S[0]
+    time_length_str_db, tl_H, tl_M, tl_S = _formatTimeLengthStr(time_length_str)
 
+    time_length = int(tl_H[0]) * 3600 + int(tl_M[0]) * 60 + int(tl_S[0]) - 1
 
-    time_length = int(tl_H[0]) * 3600 + int(tl_M[0]) * 60 + int(tl_S[0])
+    video = Video.objects.create(user=request.user, video_id=form.cleaned_data['video_id'], uni_video_id=form.cleaned_data['uni_video_id'],
+                    embed_link=form.cleaned_data['embed_link'], link=form.cleaned_data['video_link'], 
+                    title=form.cleaned_data['title'], description=form.cleaned_data['description'], class_choice=form.cleaned_data['class_choice'])
 
     YoutubeData.objects.create(video=video,title=snippet_data['title'],description=snippet_data['description'],lang=lang,
     time_length=time_length,num_views=int(stats_data['viewCount']),num_likes=int(stats_data['likeCount']),num_dislikes=int(stats_data['dislikeCount']),
     num_comments=int(stats_data['commentCount']), tags=tags, thumbnail_link=snippet_data['thumbnails']['high']['url'], time_length_str=time_length_str_db)
+
+    return video
 
 def _getSearchFilters(user):
     searchFilter = SearchFilters.objects.get(user=user)
@@ -232,3 +219,30 @@ def _getSearchCookies(request):
         return query
     else:
         return ''
+
+def _formatTimeLengthStr(time_length_str):
+    if 'H' in time_length_str:
+        tl_H = time_length_str.split('H')
+        tl_M = tl_H[1].split('M')
+        tl_S = tl_M[1].split('S')
+        time_length_str_db = tl_H[0] + ":" + tl_M[0] + ":" + tl_S[0]
+    elif 'M' in time_length_str:
+        tl_H = [0]
+        tl_M = time_length_str.split('M')
+        if len(tl_M[0]) < 2:
+            tl_M[0] = "0" + tl_M[0]
+        tl_S = tl_M[1].split('S')
+        if len(tl_S[0]) < 1:
+            tl_S[0] = "00"
+        elif len(tl_S) < 2:
+            tl_S[0] = "0" + tl_S[0]
+        time_length_str_db = tl_M[0] + ":" + tl_S[0]
+    else:
+        tl_H = [0]
+        tl_M = [0]
+        tl_S = time_length_str.split('S')
+        if len(tl_S[0]) < 2:
+            tl_S[0] = "0" + tl_S[0]
+        time_length_str_db = "00" + ":" + tl_S[0]
+
+    return time_length_str_db, tl_H, tl_M, tl_S

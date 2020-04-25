@@ -21,7 +21,6 @@ from videos import views as videos_views
 from account import views as account_views
 from django.conf import settings
 from django.conf.urls.static import static
-import django_cas_ng
 
 urlpatterns = [
     path('edit-profile/', account_views.edit_profile, name="edit_profile"),
