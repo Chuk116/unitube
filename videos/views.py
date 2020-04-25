@@ -77,7 +77,7 @@ def filter_search(request, **kwargs):
         classFilterForm = ClassFilterForm(initial={'classes':class_filters})
     else:
         filterForm = SearchFilterForm(initial={'sort_using':'Unitube', 'sort_by': 'Relevance'})
-        classFilterForm = ClassFilterForm(initial={'classes': 'Unitube'})
+        classFilterForm = ClassFilterForm(initial={'classes': 'General'})
 
         
 

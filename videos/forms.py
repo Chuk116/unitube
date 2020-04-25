@@ -10,6 +10,7 @@ class PostForm(forms.Form):
     title = forms.CharField(max_length=100, widget=forms.Textarea(attrs={'cols': 10, 'rows': 1, 'placeholder': 'Short descriptive title'}))
     description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={'cols': 10, 'rows': 10, 'placeholder':'Short description of the video plus any useful hints (best start/end time, what\'s useful, etc...)' }))
     class_choice = forms.ChoiceField(choices=CLASS_CHOICES)
+
     
     class Meta:
         model = Video
@@ -145,7 +146,7 @@ class SearchFilterForm(forms.Form):
         fields = ['learning_style', 'time_length', 'sort_by', 'sort_using']
 
 class ClassFilterForm(forms.Form):
-    CLASS_CHOICES.append(('All', 'All'))
+    CLASS_CHOICES.insert(0, ('All', 'All'))
     classes = forms.ChoiceField(required=False, widget=forms.CheckboxSelectMultiple, choices=CLASS_CHOICES)
     
     class Meta():
