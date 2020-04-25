@@ -16,7 +16,7 @@ def edit_profile(request):
         form = EditProfileForm(request.POST, instance=request.user.profile)
         if form.is_valid():
             form.save()
-            return redirect('view_profile')
+            return redirect('my_profile')
         else:
             form = EditProfileForm(instance=request.user.profile)
             form['learning_style'].label = 'Which best describes your learning style?'
