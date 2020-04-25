@@ -146,12 +146,8 @@ def _sortbyRelevance(search_query, videolist, sort_using):
         score = 0.0
         titleTrie = Trie()
         descTrie = Trie()
-        if (sort_using == 'Unitube'):
-            title_words = video.title.lower().split()
-            desc_words = video.description.lower().split()
-        else:
-            title_words = video.youtubedata.title.lower().split()
-            desc_words = video.youtubedata.title.lower().split()
+        title_words = video.title.lower().split()
+        desc_words = video.description.lower().split()
 
         for word in title_words:
             titleTrie.insert(word)
@@ -161,6 +157,12 @@ def _sortbyRelevance(search_query, videolist, sort_using):
         score += _wordScore(word_query, titleTrie) * 2.0
         score += _wordScore(word_query, descTrie)
 
+        title_words = video.youtubedata.title.lower().split()
+        desc_words = video.youtubedata.description.lower().split()
+
+        score += _wordScore(word_query, titleTrie) * 2.0
+        score += _wordScore(word_query, descTrie)
+        
         if (score != 0.0):
             finalList.append(MatchedVideo(score, video))
     
