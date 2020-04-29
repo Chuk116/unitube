@@ -26,9 +26,43 @@
         <!-- </div> -->
         <div class="row" style="padding-top:2%">
             <div class="col-sm-6">
-                <h4><strong>{{video.title}}</strong></h4>
+                <h4><strong>{{video.title}}</strong></h4> 
+                <!-- <p id='user-saving'></p><input type='hidden' id='selected_rating' value='{{rating}}'> -->
             </div>
         </div>
+
+        <!-- {% if user.is_authenticated %}
+        Script for saving feature
+        <script>
+            options1 = {
+                emoji: 'heart',
+                rating: 0,
+                count: 1,
+                fontSize: 20,
+                inputName: 'user-saving',
+                onUpdate: function() {
+                    var new_rating = $('.emoji-rating').val();
+                    // Prevents multiple database accesses for same data click
+                    if (new_rating != $('#selected_rating').val()) {
+                        post_data = {
+                            'uni_video_id': $('#this_video').val(),
+                            'rating': $('.emoji-rating').val(),
+                            csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').attr('value'),
+                        }
+                        $.ajax({
+                                type: "POST",
+                                url: "{% url 'post-rating' %}",
+                                data: post_data,
+                                success:function(response){ 
+                                    $('#selected_rating').val(new_rating)
+                                }
+                            });
+                    }
+                }
+            }
+            $('#user-saving').emojiRating(options1);
+        </script>
+    {% endif %} -->
 
         <input type='hidden' id='selected_rating' value='{{rating}}'>
         <div class="row">
@@ -45,25 +79,91 @@
         <a href="/view-profile/{{video.user.username}}"><p>{{video.user.username}}</p></a>
         <p>{{video.description}}</p>
         <hr>
+        <div class="row" style="text-align: center;">
+            <div class="col-md-6">
+                <p>
+                    <a data-toggle="collapse" href="#{{video.uni_video_id}}" role="button" aria-expanded="false" aria-controls="collapseExample" style="background: none; border: none">
+                        Youtube Data
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p>
+                    <a data-toggle="collapse" href="#{{video.uni_video_id}}_addInfo" role="button" aria-expanded="false" aria-controls="collapseExample" style="background: none; border: none">
+                        More Info
+                    </a>
+                </p>
+            </div>
+        </div>
         <div class="dropdown" style="text-align: center;">
-            <!-- <a href="#" class="dropdown-toggle" data-toggle="collapse">Youtube Data</a> -->
-            <p>
-                <a data-toggle="collapse" href="#youtube_data" role="button" aria-expanded="false" aria-controls="collapseExample" style="background: none; border: none">
-                    Youtube Data
-                </a>
-            </p>
-            <div class="collapse" id="youtube_data">
+            <div class="collapse" id="{{video.uni_video_id}}">
                 <div class="card card-body">
                     <div class='videos-page-ytb-data-wrapper'>
-                        <a href="{{video.link}}" target="_blank"><p>{{video.youtubedata.title}}</p></a>
+                        <a href="{{video.link}}" target="_blank"><p>{{video.youtubedata.title}}</p></a> 
                         <div class='videos-page-ytb-data-likes-views-wrap'></div>
-                            <div class='videos-page-ytb-data-views' style="color:gray">
-                                {{video.youtubedata.num_views}} views
+                            <div class='videos-page-ytb-data-views-comm' style="color:gray">
+                                {{video.youtubedata.num_views}} views | {{video.youtubedata.num_comments}} comments
                             </div>
                             <i class="fa fa-thumbs-up" aria-hidden="true"></i>{{video.youtubedata.num_likes}}  <i class="fa fa-thumbs-down" aria-hidden="true"></i> {{video.youtubedata.num_dislikes}}
                         </div>
                         <br>
                         <p>{{video.youtubedata.description}}</p>
+                </div>
+            </div> 
+        </div>
+        <div class="dropdown" style="text-align: center;">
+            <div class="collapse" id="{{video.uni_video_id}}_addInfo">
+                <div class="card card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                {% for class in video.class_choice %}
+                                    {% if class == video.class_choice.0 %}
+                                        {{class}} 
+                                    {% else %}
+                                        | {{class}}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row" style="text-align: center;">
+                            <div class="col-md-12">
+                                Recommended Speed: {{video.recommended_speed}}
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="col-md-12" style="text-align: center;">
+                                    Positives
+                                </div>
+                                <hr>
+                                <div class="col-md-12" style="text-align:start !important;">
+                                {% if video.positives %}
+                                    {% for positive in video.positives %}
+                                    <ul>{{positive}}</ul>
+                                    {% endfor %}
+                                {% else %}
+                                <p>None listed</p>
+                                {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="col-md-12" style="text-align: center;">
+                                    Negatives
+                                </div>
+                                <hr>
+                                <div class="col-md-12" style="text-align:start !important;">
+                                {% if video.negatives %}
+                                    {% for negative in video.negatives %}
+                                    <ul>{{negative}}</ul>
+                                    {% endfor %}
+                                {% else %}
+                                <p>None listed</p>
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
                 </div>
             </div>
         </div>
@@ -90,7 +190,6 @@
                     var new_rating = $('.emoji-rating').val();
                     // Prevents multiple database accesses for same data click
                     if (new_rating != $('#selected_rating').val()) {
-                        console.log($('.emoji-rating').val());
                         post_data = {
                             'uni_video_id': $('#this_video').val(),
                             'rating': $('.emoji-rating').val(),
@@ -101,7 +200,6 @@
                                 url: "{% url 'post-rating' %}",
                                 data: post_data,
                                 success:function(response){ 
-                                    console.log('done')
                                     $('#selected_rating').val(new_rating)
                                 }
                             });

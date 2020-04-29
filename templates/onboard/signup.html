@@ -1,0 +1,64 @@
+{% extends 'base-onboard.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container-fluid">
+  <div class="col-xs-12 col-md-12 login-title-wrapper">
+    <h1>Sign up</h1>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-sm-6 signup-form">
+        {% for field in formUser %}
+          <div class="form-group row" style="text-align: center;">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <label> {{field.label_tag }} </label>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {% render_field field class="form-control" %}
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              {% for error in field.errors %}
+                  <p style="color: black">{{ error }}</p>
+              {% endfor %}
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {% if field.help_text %}
+                    <p style="color: white">{{ field.help_text }}</p>
+                {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="col-sm-6 pa">
+          <h4 style="color: black">Below you will be inputting information for your profile.</h4>
+          {% for field in formProf %}
+          <div class="form-group row" style="text-align: center;">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <label> {{field.label_tag }} </label>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {% render_field field class="form-control" %}
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              {% for error in field.errors %}
+                  <p style="color: black">{{ error }}</p>
+              {% endfor %}
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {% if field.help_text %}
+                    <p style="color: white">{{ field.help_text }}</p>
+                {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Sign up</button>
+  </form>
+  <br>
+<p><a href="{% url 'login' %}">Back to Login</a></p>
+</div>
+
+{% endblock %}

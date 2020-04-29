@@ -18,6 +18,32 @@ CLASS_CHOICES = [
     ('Cos424', 'Cos424'),
 ]
 
+SPEEDS = [
+    ('Normal', 'Normal'),
+    ('0.25x', '0.25x'),
+    ('0.50x', '0.50x'),
+    ('0.75x', '0.75x'),
+    ('1.25x', '1.25x'),
+    ('1.50x', '1.50x'),
+    ('1.75x', '1.75x'),
+    ('2x', '2x'),
+]
+
+VIDEO_POSITIVES = [
+    ('Great visualizations', 'Great visualizations'),
+    ('In-depth Explanation', 'In-depth Explanation'),
+    ('Engaging Speaker | Easy to Understand', 'Engaging Speaker | Easy to Understand'),
+    ('Uses/walksthrough an example or examples', 'Uses/walksthrough an example(s)'),
+]
+
+VIDEO_NEGATIVES = [
+    ('Poor visualizations or none at all', 'Poor visualizations or none at all'),
+    ('No in-depth explanation', 'No in-depth explanation'),
+    ('Boring speaker, or hard to understand', 'Boring speaker, or hard to understand'),
+    ('No demo or walkthrough', 'No demo or walkthrough'),
+    ('No voiceover', 'No voiceover'),
+]
+
 TIME_LENGTH_CHOICES = [
     ('short', 'Short (0 - 5 minutes)'),
     ('medium', 'Medium (5 - 15 minutes)'),
@@ -54,7 +80,10 @@ class Video(models.Model):
     num_ratings = models.IntegerField(default=0)
     num_views = models.DecimalField(max_digits=12, decimal_places=0, default=0)
     description = models.TextField()
-    class_choice = models.CharField(max_length=30, blank=False, choices=CLASS_CHOICES)
+    recommended_speed = models.CharField(default='', max_length=30, choices=SPEEDS)
+    positives = MultiSelectField(default='', max_length=200, blank=False, choices=VIDEO_POSITIVES)
+    negatives = MultiSelectField(default='', max_length=200, blank=False, choices=VIDEO_NEGATIVES)
+    class_choice = MultiSelectField(default='', max_length=200, blank=False, choices=CLASS_CHOICES)
 
 class YoutubeData(models.Model):
     video = models.OneToOneField(Video, on_delete=models.CASCADE)
@@ -100,11 +129,11 @@ class Rating(models.Model):
 
 class SearchFilters(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    learning_style = models.CharField(default='', max_length=3000, choices=LEARN_STYLES_CHOICES)
+    learning_style = MultiSelectField(default='', max_length=3000, choices=LEARN_STYLES_CHOICES)
     time_length = MultiSelectField(default='', choices=TIME_LENGTH_CHOICES)
     sort_by = models.CharField(default='Relevance', max_length=3000, choices=SORT_BY_CHOICES)
     sort_using = models.CharField(max_length=3000, default='Unitube', choices=SORT_BY_DATA_CHOICES)
 
 class ClassFilters(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    classes = MultiSelectField(default='General', choices=CLASS_CHOICES)
+    classes = MultiSelectField(default='All', choices=CLASS_CHOICES)

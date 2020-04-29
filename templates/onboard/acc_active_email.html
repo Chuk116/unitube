@@ -1,0 +1,7 @@
+{% autoescape off %}
+Hi {{ user.username }}, you are almost officially a part of the Unitube Community! 
+
+
+Please click on the link to confirm your registration!
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+{% endautoescape %}

@@ -77,16 +77,21 @@ def _filterClasses(class_filters):
     if 'All' in class_filters:
         return Video.objects.all()   
     videolist = []
+
     for class_ in class_filters:
-        videolist += list(Video.objects.filter(class_choice=class_))
+        videolist += list(filter(lambda video: class_ in video.class_choice and video not in videolist, Video.objects.all()))
     
     return videolist
 
 def _filterLearnStyle(videolist, learn_style):
-    if learn_style == '': 
+    if learn_style == [] or learn_style == '': 
         return videolist
 
-    return list(filter(lambda video: video.user.profile.learning_style == learn_style, videolist))
+    new_video_list = []
+    for style in learn_style:
+        new_video_list += list(filter(lambda video: video.user.profile.learning_style == style, videolist))
+
+    return new_video_list
 
 def _filterTimeLength(videolist, time_lengths):
     if time_lengths == '' or time_lengths == []:

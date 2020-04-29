@@ -102,11 +102,12 @@
 				emoji = decodeEmoji(this.settings.emoji),
 				count = this.settings.count,
 				rating = this.settings.rating,
-				container = "<div class='jqEmoji-container' style='float: right'>",
+				inputName = this.settings.inputName,
+				container = "<div class='jqEmoji-container'>",
 				star;
 
 			for (var i = 0; i < count; i++) {
-				star = "<span class='jqEmoji' data-index='" + i + "'>" + emoji + "</span>";
+				star = "<span class='jqEmoji' id='" + inputName + "' data-index='" + i + "'>" + emoji + "</span>";
 				container += star;
 			}
 			container += "</div>";
@@ -115,22 +116,25 @@
 			this.colorEmojis(rating);
 		},
 		clearEmojis: function(rating) {
+			var
+				inputName = this.settings.inputName;
 			for (var i = this.settings.count - 1; i >= rating; i--) {
-				$element.find(".jqEmoji").eq(i).css("opacity", 0.2);
+				$element.find("#" + inputName).eq(i).css("opacity", 0.2);
 			}
 		},
 		colorEmojis: function(count) {
 			this.clearEmojis(count);
 
 			for (var i = 0; i < count; i++) {
-				$element.find(".jqEmoji").eq(i).css("opacity", 1);
+				$element.find("#" + inputName).eq(i).css("opacity", 1);
 			}
 		},
 		handleClick: function() {
 			var 
-				self = this;
+				self = this,
+				inputName = this.seetings.inputName;
 
-			$element.on("click", ".jqEmoji", function() {
+			$element.on("click", "#" + inputName, function() {
 				var 
           			index = $(this).data("index"),
 					count = parseInt(index, 10) + 1;
@@ -151,7 +155,8 @@
 		},
 		handleHover: function() {
 			var 
-				self = this;
+				self = this,
+				inputName = this.settings.inputName;
 
 			$element.on({
 				mouseenter: function() {
@@ -169,7 +174,7 @@
 						self.clearEmojis(self.settings.rating);
 					}
 				}
-			}, ".jqEmoji" );
+			}, "#" + inputName );
 		},
 		appendInput: function(count) {
 			var 

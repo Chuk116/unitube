@@ -1,5 +1,5 @@
 from django import forms
-from .models import Video, SearchFilters, CLASS_CHOICES, TIME_LENGTH_CHOICES, SORT_BY_CHOICES, SORT_BY_DATA_CHOICES
+from .models import Video, SearchFilters, CLASS_CHOICES, TIME_LENGTH_CHOICES, SORT_BY_CHOICES, SORT_BY_DATA_CHOICES, SPEEDS, VIDEO_POSITIVES, VIDEO_NEGATIVES
 from account.models import LEARN_STYLES_CHOICES
 from unitube.settings import YOUTUBE_API_KEY
 import urllib.request
@@ -9,14 +9,18 @@ class PostForm(forms.Form):
     video_link = forms.CharField(max_length=100, widget=forms.Textarea(attrs={'cols': 10, 'rows': 1, 'placeholder': 'Youtube link under Education or Science and Technology categories'}))
     title = forms.CharField(max_length=100, widget=forms.Textarea(attrs={'cols': 10, 'rows': 1, 'placeholder': 'Short descriptive title'}))
     description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={'cols': 10, 'rows': 10, 'placeholder':'Short description of the video plus any useful hints (best start/end time, what\'s useful, etc...)' }))
-    class_choice = forms.ChoiceField(choices=CLASS_CHOICES)
+    recommended_speed = forms.ChoiceField(choices=SPEEDS)
+    positives = forms.MultipleChoiceField(required=False,
+        choices=VIDEO_POSITIVES)
+    negatives = forms.MultipleChoiceField(required=False, choices=VIDEO_NEGATIVES)
+    class_choice = forms.MultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple, choices=CLASS_CHOICES)
 
-    
     class Meta:
         model = Video
-        fields = ('video_link', 'title', 'description', 'class_choice')
+        fields = ('video_link', 'title', 'description', 'class_choice', 'recommended_speed', 'positives', 'negatives')
 
     def clean(self):
+
         video_link = self.cleaned_data.get('video_link')
         cleanlink, link_or_error, video_id = cleanLink(video_link)
         if not cleanlink:
@@ -29,8 +33,9 @@ class PostForm(forms.Form):
             videos = Video.objects.filter(video_id=video_id)
             if videos.exists():
                 for video in videos:
-                    if video.class_choice == class_choice:
-                        self.add_error('class_choice', 'This video has already been added for this class.')
+                    videoIsInClass, error_message = videoInClass(video, class_choice)
+                    if videoIsInClass:
+                        self.add_error('class_choice', error_message)
                     else:
                         self.cleaned_data['video_id'] = video_id
                         self.cleaned_data['uni_video_id'] = video_id + randomStringDigits()
@@ -46,6 +51,9 @@ class PostForm(forms.Form):
             self.add_error('video_link', error_message)
         else:
             self.cleaned_data['snippet_data'] = snippet_data
+
+        if self.cleaned_data.get('class_choice') == '' or self.cleaned_data.get('class_choice') == []:
+            self.add_error('class_choice', 'You must select at least one of the options')
             
         return self.cleaned_data
 
@@ -97,6 +105,19 @@ def _checkVideoPostable(video_id):
 
     return True, '', snippet_data
 
+def videoInClass(video, class_choice):
+    classes = video.class_choice
+    same_class = []
+    for class_ in classes:
+        if class_ in class_choice:
+            same_class.append(class_)
+    
+    if len(same_class) > 0: 
+        return True, 'This video has already been posted to the following classes: ' + str(same_class)
+
+    return False, ''
+
+
 import random
 import string
 
@@ -136,7 +157,7 @@ class CommentForm(forms.Form):
 
 class SearchFilterForm(forms.Form):
     LEARN_STYLES_CHOICES.remove(('',''))
-    learning_style = forms.ChoiceField(required=False, widget=forms.RadioSelect, choices=LEARN_STYLES_CHOICES)
+    learning_style = forms.ChoiceField(required=False, widget=forms.CheckboxSelectMultiple, choices=LEARN_STYLES_CHOICES)
     time_length = forms.ChoiceField(required=False, widget=forms.CheckboxSelectMultiple, choices=TIME_LENGTH_CHOICES)
     sort_by = forms.ChoiceField(required=False, widget=forms.RadioSelect, choices=SORT_BY_CHOICES)
     sort_using = forms.ChoiceField(required=False, widget=forms.RadioSelect, choices=SORT_BY_DATA_CHOICES)

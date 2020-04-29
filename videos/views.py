@@ -29,7 +29,7 @@ def search(request, **kwargs):
         filterForm = SearchFilterForm(initial=initial_data_filter)
         classFilterForm = ClassFilterForm(initial={'classes':class_filters})
     else:
-        filters = ['', [], 'Relevance', 'Unitube']
+        filters = [[], [], 'Relevance', 'Unitube']
         class_filters = ['General']
 
     
@@ -45,7 +45,7 @@ def filter_search(request, **kwargs):
     context = {}
     if request.method == 'POST':
         filterForm = SearchFilterForm()
-        learn_style = request.POST.get('learning_style')
+        learn_style = request.POST.getlist('learning_style')
         learn_style = '' if learn_style is None else learn_style
         time_length = request.POST.getlist('time_length')
         sort_by = request.POST.get('sort_by')
@@ -196,7 +196,8 @@ def _storeYoutubeDataAndCreateVideo(snippet_data, request, form):
 
     video = Video.objects.create(user=request.user, video_id=form.cleaned_data['video_id'], uni_video_id=form.cleaned_data['uni_video_id'],
                     embed_link=form.cleaned_data['embed_link'], link=form.cleaned_data['video_link'], 
-                    title=form.cleaned_data['title'], description=form.cleaned_data['description'], class_choice=form.cleaned_data['class_choice'])
+                    title=form.cleaned_data['title'], description=form.cleaned_data['description'], class_choice=form.cleaned_data['class_choice'],
+                    positives=form.cleaned_data['positives'], negatives=form.cleaned_data['negatives'], recommended_speed=form.cleaned_data['recommended_speed'])
 
     YoutubeData.objects.create(video=video,title=snippet_data['title'],description=snippet_data['description'],lang=lang,
     time_length=time_length,num_views=int(stats_data['viewCount']),num_likes=int(stats_data['likeCount']),num_dislikes=int(stats_data['dislikeCount']),
@@ -234,7 +235,7 @@ def _formatTimeLengthStr(time_length_str):
         tl_S = tl_M[1].split('S')
         if len(tl_S[0]) < 1:
             tl_S[0] = "00"
-        elif len(tl_S) < 2:
+        elif len(tl_S[0]) < 2:
             tl_S[0] = "0" + tl_S[0]
         time_length_str_db = tl_M[0] + ":" + tl_S[0]
     else:

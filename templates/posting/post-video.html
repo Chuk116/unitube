@@ -52,10 +52,39 @@
                 </div>
                 <div class="form-group row" style="text-align: center;">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <label> {{form.recommended_speed.label_tag }} </label>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        {% render_field form.recommended_speed class="form-control" %}
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        {% for error in form.recommended_speed.errors %}
+                            <p style="color: red">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group row" style="text-align: center; padding: 3% 0% 3% 0%;">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <label> {{form.class_choice.label_tag }} </label>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12col-lg-12">
-                        {% render_field form.class_choice class="form-control" style="text-align: center;"%}
+                        <div class="container">
+                        <!-- {% render_field form.class_choice class="form-control" style="text-align: center;"%} -->
+                                <div class="row">
+                                    <div class="col-sm-12" style="text-align: center;">
+                                        <!-- <strong>{{ classFilterForm.classes.label }}</strong><hr> -->
+                                            <div class="row">
+                                                {% for radio in form.class_choice %}
+                                                    <div class="col-sm-2">
+                                                        <label for="{{ radio.label }}">
+                                                            <p style="padding-right:2%;">{{ radio.tag }} {{ radio.choice_label }}</p>
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         {% for error in form.class_choice.errors %}
@@ -63,10 +92,44 @@
                         {% endfor %}
                     </div>
                 </div>
-                    <!-- {% if field.help_text %}
-                        <small style="color: grey">{{ field.help_text }}</small>
-                    {% endif %} -->
-                
+                <div class="form-group row" style="text-align: center;">
+                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                        <div class="row">
+                            <div class="container">
+                            <!-- {% render_field form.class_choice class="form-control" style="text-align: center;"%} -->
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <label> {{form.positives.label_tag }} </label>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    {% render_field form.positives class="form-control" %}
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    {% for error in form.positives.errors %}
+                                        <p style="color: red">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                        <div class="row">
+                            <div class="container">
+                            <!-- {% render_field form.class_choice class="form-control" style="text-align: center;"%} -->
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        <label> {{form.negatives.label_tag }} </label>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        {% render_field form.negatives class="form-control" %}
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        {% for error in form.negatives.errors %}
+                                            <p style="color: red">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
                     <div class="post-video-button-wrapper">
                         <button class="btn btn-primary" type="submit">Post</button>
                     </div>

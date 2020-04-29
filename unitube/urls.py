@@ -39,6 +39,7 @@ urlpatterns = [
     path('login/', onboard_views.login, name="login"),
     path('signup/', onboard_views.signup, name="signup"),
     path('admin/', admin.site.urls),
-    # path('cas/login', django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'),
-    # path('cas/logout', django_cas_ng.views.LogoutView.as_view(), name='cas_ng_logout'),
+
+    url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        onboard_views.activate, name='activate'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
